@@ -426,8 +426,8 @@
     <li><a href="#equipo">Equipo</a></li>
     <li><a href="#resultados">Resultados</a></li>
     <li><a href="#noticias">Noticias</a></li>
-    <li><a href="#tolerancia">Tolerancia</a></li>
-    <li><a href="#patrocinadores" class="nav-cta">Sponsors</a></li>
+    <li><a href="#tolerancia" class="nav-cta">Tolerancia</a></li>
+    <li><a href="#patrocinadores">Sponsors</a></li>
   </ul>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="nav-admin-btn" onclick="openAdmin()">⚙ Admin</button>
@@ -736,21 +736,23 @@
         <!-- TOLERANCIA -->
         <div class="admin-pane" id="apane-tolerancia">
           <div class="admin-section-title">Añadir a la lista</div>
-          <div class="aform">
-            <div class="afg"><label>Lista</label>
+          <div class="aform" style="margin-bottom:0">
+            <div class="afg">
+              <label>Lista</label>
               <select id="t-tipo">
                 <option value="si">✓ Toleramos</option>
                 <option value="no">✕ No Toleramos</option>
               </select>
             </div>
-            <div class="afg"><label>Texto</label>
+            <div class="afg">
+              <label>Texto</label>
               <input id="t-texto" type="text" placeholder="Ej: Las barbacoas de Lorenzo, Los penaltis fallados...">
             </div>
-            <button class="btn-p" id="t-submit" onclick="addTolItem()">Añadir a la lista</button>
+            <button class="btn-p" style="width:100%" id="t-submit" onclick="addTolItem()">Añadir a la lista</button>
             <p class="admin-success" id="t-ok">✓ Añadido correctamente</p>
             <p class="admin-error-msg" id="t-err">❌ Error al guardar.</p>
           </div>
-          <div class="admin-list" style="margin-top:24px">
+          <div class="admin-list">
             <div class="admin-list-title">Entradas guardadas</div>
             <div id="admin-tol-list"><div class="skeleton skeleton-match"></div><div class="skeleton skeleton-match"></div></div>
           </div>
