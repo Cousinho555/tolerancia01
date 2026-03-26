@@ -425,11 +425,14 @@
   @keyframes splashFadeOut{to{opacity:0}}
   #splash-canvas{position:absolute;inset:0;width:100%;height:100%}
   .glitch-wrap{position:relative;display:flex;flex-direction:column;align-items:center;z-index:2}
-  .glitch-logo-img{width:100px;height:100px;object-fit:contain;display:block}
-  .glitch-title{font-family:'Bebas Neue',sans-serif;font-size:68px;letter-spacing:8px;color:#f0f0f0;margin-top:16px;position:relative;z-index:2}
+  /* Logo de fondo con transparencia */
+  .glitch-logo-bg{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:320px;height:320px;object-fit:contain;opacity:0.18;z-index:1;pointer-events:none;filter:drop-shadow(0 0 30px rgba(224,64,160,0.3))}
+  /* Texto encima */
+  .glitch-title{font-family:'Bebas Neue',sans-serif;font-size:82px;letter-spacing:8px;color:#f0f0f0;position:relative;z-index:3;line-height:1}
   .glitch-title span{color:#E040A0}
-  .glitch-sub{font-family:'Inter',sans-serif;font-size:10px;font-weight:500;letter-spacing:6px;text-transform:uppercase;color:#444;margin-top:6px}
-  .glitch-bar-wrap{width:140px;height:1px;background:rgba(255,255,255,0.06);margin-top:36px;position:relative;overflow:hidden}
+  .glitch-sub{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--white,#f0f0f0);margin-top:10px;position:relative;z-index:3}
+  .glitch-sub em{color:#E040A0;font-style:normal}
+  .glitch-bar-wrap{width:140px;height:1px;background:rgba(255,255,255,0.06);margin-top:40px;position:relative;overflow:hidden;z-index:3}
   .glitch-bar{position:absolute;inset:0;width:0%;background:#E040A0;animation:gBarFill 1.4s .3s ease forwards}
   @keyframes gBarFill{to{width:100%}}
 </style>
@@ -439,10 +442,12 @@
 <!-- GLITCH SPLASH SCREEN -->
 <div id="splash">
   <canvas id="splash-canvas"></canvas>
+  <!-- Logo de fondo con transparencia, sin glitch -->
+  <img src="logo.png" class="glitch-logo-bg" alt="" id="splash-logo-bg">
+  <!-- Contenido centrado encima -->
   <div class="glitch-wrap">
-    <img src="logo.png" class="glitch-logo-img" alt="T01" id="splash-logo">
-    <div class="glitch-title">T<span>01</span></div>
-    <div class="glitch-sub">Sin margen de error</div>
+    <div class="glitch-title" id="splash-title">T<span>01</span></div>
+    <div class="glitch-sub"><em>Maricón</em>&nbsp;el último</div>
     <div class="glitch-bar-wrap"><div class="glitch-bar"></div></div>
   </div>
 </div>
@@ -1565,7 +1570,7 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
   const splash  = document.getElementById('splash');
   const canvas  = document.getElementById('splash-canvas');
   const ctx     = canvas.getContext('2d');
-  const logo    = document.getElementById('splash-logo');
+  const title   = document.getElementById('splash-title');
   let   running = true;
   let   frame   = 0;
 
@@ -1576,69 +1581,62 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
   resize();
   window.addEventListener('resize', resize);
 
-  // Draw scanlines + scanbeam + noise on canvas each frame
   function drawFX() {
     if (!running) return;
     frame++;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Scanlines
+    // Scanlines sutiles
     ctx.fillStyle = 'rgba(224,64,160,0.025)';
     for (let y = 0; y < canvas.height; y += 4) {
       ctx.fillRect(0, y, canvas.width, 1);
     }
 
-    // Travelling scan beam
+    // Haz de luz que recorre la pantalla de arriba a abajo
     const beamY = ((frame * 2.5) % (canvas.height + 60)) - 30;
     const beam = ctx.createLinearGradient(0, beamY - 30, 0, beamY + 30);
     beam.addColorStop(0,   'rgba(224,64,160,0)');
-    beam.addColorStop(0.5, 'rgba(224,64,160,0.18)');
+    beam.addColorStop(0.5, 'rgba(224,64,160,0.15)');
     beam.addColorStop(1,   'rgba(224,64,160,0)');
     ctx.fillStyle = beam;
     ctx.fillRect(0, beamY - 30, canvas.width, 60);
 
-    // Horizontal glitch slices — fire randomly
-    if (Math.random() < 0.06) {
-      const slices = Math.floor(Math.random() * 4) + 1;
+    // Slices horizontales de glitch aleatorios
+    if (Math.random() < 0.07) {
+      const slices = Math.floor(Math.random() * 3) + 1;
       for (let i = 0; i < slices; i++) {
         const y  = Math.random() * canvas.height;
-        const h  = Math.random() * 6 + 1;
-        const dx = (Math.random() - 0.5) * 28;
+        const h  = Math.random() * 5 + 1;
         ctx.save();
-        ctx.globalAlpha = Math.random() * 0.35 + 0.1;
-        // Pick cyan or magenta tint
-        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,255,255,0.15)' : 'rgba(255,0,102,0.15)';
+        ctx.globalAlpha = Math.random() * 0.3 + 0.08;
+        ctx.fillStyle = Math.random() > 0.5
+          ? 'rgba(0,255,255,0.2)'
+          : 'rgba(255,0,102,0.2)';
         ctx.fillRect(0, y, canvas.width, h);
-        // Shift a strip of pixels horizontally using the canvas itself
-        try {
-          const imgData = ctx.getImageData(0, y, canvas.width, h);
-          ctx.putImageData(imgData, dx, y);
-        } catch(e) {}
         ctx.restore();
       }
     }
 
-    // Occasional full-width colour flash
+    // Flash de color ocasional
     if (Math.random() < 0.008) {
-      ctx.fillStyle = Math.random() > 0.5
-        ? 'rgba(224,64,160,0.06)'
-        : 'rgba(0,255,255,0.04)';
+      ctx.fillStyle = 'rgba(224,64,160,0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Glitch the logo img with CSS transform occasionally
-    if (logo) {
-      if (Math.random() < 0.04) {
-        const dx = (Math.random() - 0.5) * 10;
-        const dy = (Math.random() - 0.5) * 4;
-        logo.style.transform = `translate(${dx}px,${dy}px)`;
-        logo.style.filter = Math.random() > 0.5
-          ? 'hue-rotate(180deg) saturate(3) brightness(1.4)'
-          : 'hue-rotate(270deg) saturate(3)';
-        setTimeout(() => {
-          if (logo) { logo.style.transform = ''; logo.style.filter = ''; }
-        }, 60);
-      }
+    // Glitch en el título T01 — desplazamiento + color shift
+    if (title && Math.random() < 0.05) {
+      const dx = (Math.random() - 0.5) * 12;
+      const dy = (Math.random() - 0.5) * 3;
+      title.style.transform = `translate(${dx}px,${dy}px) skewX(${(Math.random()-0.5)*4}deg)`;
+      title.style.textShadow = Math.random() > 0.5
+        ? '4px 0 #ff0066, -4px 0 #00ffff'
+        : '-3px 0 #00ffff, 3px 0 #ff0066';
+      setTimeout(() => {
+        if (title) {
+          title.style.transform = '';
+          title.style.textShadow = '';
+        }
+      }, 80);
     }
 
     requestAnimationFrame(drawFX);
@@ -1646,7 +1644,7 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
   drawFX();
 
-  // Hide after 2.4s
+  // Oculta tras 2.4s
   function hideSplash() {
     running = false;
     splash.classList.add('hide');
