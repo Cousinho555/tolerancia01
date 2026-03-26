@@ -418,31 +418,110 @@
     footer{padding:32px 22px}
   }
   /* ════════════════════════════
-     SPLASH SCREEN
+     GLITCH SPLASH SCREEN
   ════════════════════════════ */
-  #splash{position:fixed;inset:0;z-index:9999;background:#090909;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;pointer-events:none}
-  #splash.hide{animation:splashOut .5s .1s ease both}
-  @keyframes splashOut{to{opacity:0;transform:scale(1.04)}}
-  .splash-logo{width:110px;height:110px;animation:splashLogo .6s ease both;filter:drop-shadow(0 0 28px rgba(224,64,160,0.6))}
-  @keyframes splashLogo{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
-  .splash-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:6px;color:#f0f0f0;margin-top:18px;animation:splashTitle .6s .15s ease both}
-  .splash-title span{color:#E040A0}
-  @keyframes splashTitle{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-  .splash-sub{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:#777;margin-top:8px;animation:splashTitle .6s .28s ease both}
-  .splash-bar-wrap{width:120px;height:2px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:36px;overflow:hidden;animation:splashTitle .6s .35s ease both}
-  .splash-bar{height:100%;width:0%;background:linear-gradient(90deg,#9A1868,#E040A0,#F472C0);border-radius:2px;animation:splashBarFill 1.1s .4s ease forwards}
-  @keyframes splashBarFill{to{width:100%}}
+  #splash{position:fixed;inset:0;z-index:9999;background:#090909;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;pointer-events:none}
+  #splash.hide{animation:splashFadeOut .4s ease forwards}
+  @keyframes splashFadeOut{to{opacity:0}}
+
+  /* Líneas de escáner de fondo */
+  #splash::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(224,64,160,0.03) 3px,rgba(224,64,160,0.03) 4px);pointer-events:none;animation:scanMove 8s linear infinite}
+  @keyframes scanMove{from{background-position:0 0}to{background-position:0 100px}}
+
+  /* Línea de escáner que baja */
+  #splash::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(224,64,160,0.6),transparent);animation:scanLine 1.8s ease-in-out infinite;top:0}
+  @keyframes scanLine{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}
+
+  /* Contenedor del logo con glitch */
+  .glitch-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:0}
+
+  /* Logo principal */
+  .glitch-logo{width:110px;height:110px;position:relative;animation:glitchLogoIn .4s ease both}
+  @keyframes glitchLogoIn{from{opacity:0;transform:scale(1.2)}to{opacity:1;transform:scale(1)}}
+
+  /* Capas de glitch del logo */
+  .glitch-logo img{width:100%;height:100%;object-fit:contain;position:relative;z-index:1}
+  .glitch-logo::before,.glitch-logo::after{content:'';position:absolute;inset:0;background:url('icon-512.png') center/contain no-repeat;opacity:0}
+  .glitch-logo::before{filter:hue-rotate(180deg) saturate(3);animation:glitchLayer1 2.5s .5s infinite}
+  .glitch-logo::after{filter:hue-rotate(90deg) saturate(3) brightness(2);animation:glitchLayer2 2.5s .8s infinite}
+
+  @keyframes glitchLayer1{
+    0%,89%{opacity:0;transform:translate(0)}
+    90%{opacity:.7;transform:translate(-4px,2px);clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%)}
+    92%{opacity:.7;transform:translate(4px,-2px);clip-path:polygon(0 55%,100% 55%,100% 70%,0 70%)}
+    94%{opacity:.7;transform:translate(-3px,0);clip-path:polygon(0 10%,100% 10%,100% 25%,0 25%)}
+    96%,100%{opacity:0;transform:translate(0)}
+  }
+  @keyframes glitchLayer2{
+    0%,91%{opacity:0;transform:translate(0)}
+    92%{opacity:.6;transform:translate(5px,-3px);clip-path:polygon(0 40%,100% 40%,100% 55%,0 55%)}
+    94%{opacity:.6;transform:translate(-4px,2px);clip-path:polygon(0 70%,100% 70%,100% 85%,0 85%)}
+    96%,100%{opacity:0;transform:translate(0)}
+  }
+
+  /* Título con glitch de texto */
+  .glitch-title{position:relative;font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:8px;color:#f0f0f0;margin-top:20px;animation:glitchTitleIn .5s .2s ease both}
+  .glitch-title span{color:#E040A0}
+  @keyframes glitchTitleIn{from{opacity:0;transform:translateY(10px) skewX(-5deg)}to{opacity:1;transform:translateY(0) skewX(0)}}
+
+  /* Capas de glitch del título */
+  .glitch-title::before,.glitch-title::after{content:'T01';position:absolute;top:0;left:0;width:100%;height:100%;opacity:0}
+  .glitch-title::before{color:#ff0066;text-shadow:2px 0 #ff0066;animation:glitchText1 2.5s .6s infinite}
+  .glitch-title::after{color:#00ffff;text-shadow:-2px 0 #00ffff;animation:glitchText2 2.5s .9s infinite}
+
+  @keyframes glitchText1{
+    0%,87%{opacity:0;transform:translate(0)}
+    88%{opacity:.8;transform:translate(-3px,1px);clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%)}
+    90%{opacity:.8;transform:translate(3px,-1px);clip-path:polygon(0 60%,100% 60%,100% 75%,0 75%)}
+    92%,100%{opacity:0;transform:translate(0)}
+  }
+  @keyframes glitchText2{
+    0%,89%{opacity:0;transform:translate(0)}
+    90%{opacity:.7;transform:translate(4px,2px);clip-path:polygon(0 15%,100% 15%,100% 35%,0 35%)}
+    92%{opacity:.7;transform:translate(-3px,-1px);clip-path:polygon(0 65%,100% 65%,100% 80%,0 80%)}
+    94%,100%{opacity:0;transform:translate(0)}
+  }
+
+  /* Subtítulo */
+  .glitch-sub{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:6px;text-transform:uppercase;color:#555;margin-top:6px;animation:glitchTitleIn .5s .35s ease both}
+
+  /* Barra inferior con glitch */
+  .glitch-bar-wrap{width:140px;height:1px;background:rgba(255,255,255,0.06);margin-top:40px;overflow:visible;position:relative;animation:glitchTitleIn .5s .4s ease both}
+  .glitch-bar{position:absolute;top:0;left:0;height:1px;width:0%;background:#E040A0;animation:glitchBarFill 1.2s .5s ease forwards,glitchBarFlicker 2.5s 1.7s infinite}
+  @keyframes glitchBarFill{to{width:100%}}
+  @keyframes glitchBarFlicker{
+    0%,85%{opacity:1;transform:scaleX(1)}
+    86%{opacity:.3;transform:scaleX(1.02) translateX(-2px)}
+    88%{opacity:1;transform:scaleX(.98) translateX(2px)}
+    90%,100%{opacity:1;transform:scaleX(1)}
+  }
+  .glitch-bar::after{content:'';position:absolute;right:-4px;top:-3px;width:8px;height:7px;background:#E040A0;animation:glitchBarFill 1.2s .5s ease forwards,glitchCursor .6s 1.7s step-end infinite}
+  @keyframes glitchCursor{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* Ruido de fondo ocasional */
+  .glitch-noise{position:absolute;inset:0;opacity:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px;animation:noisePulse 2.5s .7s infinite}
+  @keyframes noisePulse{
+    0%,84%{opacity:0}
+    85%{opacity:.04}
+    87%{opacity:.02}
+    89%{opacity:.05}
+    91%,100%{opacity:0}
+  }
 </style>
 </head>
 <body>
 
-<!-- SPLASH SCREEN -->
+<!-- GLITCH SPLASH SCREEN -->
 <div id="splash">
-  <img src="icon-512.png" class="splash-logo" alt="T01"
-       onerror="this.src='logo.png'">
-  <div class="splash-title">T<span>01</span></div>
-  <div class="splash-sub">Sin margen de error</div>
-  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
+  <div class="glitch-noise"></div>
+  <div class="glitch-wrap">
+    <div class="glitch-logo">
+      <img src="icon-512.png" alt="T01" onerror="this.src='logo.png'">
+    </div>
+    <div class="glitch-title">T<span>01</span></div>
+    <div class="glitch-sub">Sin margen de error</div>
+    <div class="glitch-bar-wrap"><div class="glitch-bar"></div></div>
+  </div>
 </div>
 
 <!-- NAV -->
@@ -1558,15 +1637,15 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 </script>
 <!-- SPLASH + PWA -->
 <script>
-// Splash: espera a que la fuente cargue y luego desaparece
+// Glitch Splash
 (function() {
   const splash = document.getElementById('splash');
   function hideSplash() {
     splash.classList.add('hide');
-    setTimeout(() => splash.style.display = 'none', 620);
+    setTimeout(() => { splash.style.display = 'none'; }, 450);
   }
-  // Mínimo 1.4s para que se vea la animación completa
-  const minTime = new Promise(r => setTimeout(r, 1400));
+  // 2.2s para que se vea el glitch en acción antes de desaparecer
+  const minTime = new Promise(r => setTimeout(r, 2200));
   const loaded  = new Promise(r => {
     if (document.readyState === 'complete') r();
     else window.addEventListener('load', r);
