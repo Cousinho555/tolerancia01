@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tolerancia 0'1 — Equipo de Deportes y Esports</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#E040A0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tolerancia 0'1">
+<link rel="apple-touch-icon" href="logo.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -426,8 +435,8 @@
     <li><a href="#equipo">Equipo</a></li>
     <li><a href="#resultados">Resultados</a></li>
     <li><a href="#noticias">Noticias</a></li>
-    <li><a href="#tolerancia" class="nav-cta">Tolerancia</a></li>
-    <li><a href="#patrocinadores">Sponsors</a></li>
+    <li><a href="#tolerancia">Tolerancia</a></li>
+    <li><a href="#patrocinadores" class="nav-cta">Sponsors</a></li>
   </ul>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="nav-admin-btn" onclick="openAdmin()">⚙ Admin</button>
@@ -736,23 +745,21 @@
         <!-- TOLERANCIA -->
         <div class="admin-pane" id="apane-tolerancia">
           <div class="admin-section-title">Añadir a la lista</div>
-          <div class="aform" style="margin-bottom:0">
-            <div class="afg">
-              <label>Lista</label>
+          <div class="aform">
+            <div class="afg"><label>Lista</label>
               <select id="t-tipo">
                 <option value="si">✓ Toleramos</option>
                 <option value="no">✕ No Toleramos</option>
               </select>
             </div>
-            <div class="afg">
-              <label>Texto</label>
+            <div class="afg"><label>Texto</label>
               <input id="t-texto" type="text" placeholder="Ej: Las barbacoas de Lorenzo, Los penaltis fallados...">
             </div>
-            <button class="btn-p" style="width:100%" id="t-submit" onclick="addTolItem()">Añadir a la lista</button>
+            <button class="btn-p" id="t-submit" onclick="addTolItem()">Añadir a la lista</button>
             <p class="admin-success" id="t-ok">✓ Añadido correctamente</p>
             <p class="admin-error-msg" id="t-err">❌ Error al guardar.</p>
           </div>
-          <div class="admin-list">
+          <div class="admin-list" style="margin-top:24px">
             <div class="admin-list-title">Entradas guardadas</div>
             <div id="admin-tol-list"><div class="skeleton skeleton-match"></div><div class="skeleton skeleton-match"></div></div>
           </div>
@@ -1527,6 +1534,33 @@ loadNews();
 loadTolItems();
 observeReveals();
 document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+<!-- PWA: registro del Service Worker -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/tolerancia01/sw.js')
+      .then(reg => {
+        // Comprueba actualizaciones cada vez que se abre la app
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // Hay versión nueva — aplica sin molestar al usuario
+              newWorker.postMessage('skipWaiting');
+            }
+          });
+        });
+      })
+      .catch(err => console.log('SW error:', err));
+
+    // Recarga cuando el SW se activa con versión nueva
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) { refreshing = true; window.location.reload(); }
+    });
+  });
+}
 </script>
 </body>
 </html>
