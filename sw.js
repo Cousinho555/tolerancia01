@@ -4,15 +4,9 @@
 // hagas un cambio importante en la web para
 // forzar la actualización en todos los dispositivos
 // ══════════════════════════════════════════════════
-// ══════════════════════════════════════════════════
-// TOLERANCIA 0'1 — Service Worker
-// ══════════════════════════════════════════════════
+const VERSION = 'tol01-v3';
 
-// OneSignal (imprescindible que esté en la primera línea)
-importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
-
-const VERSION = 'tol01-v4';
-
+// Archivos que se guardan en caché para funcionar offline
 const STATIC_CACHE = [
   '/tolerancia01/',
   '/tolerancia01/index.html',
@@ -24,6 +18,7 @@ const STATIC_CACHE = [
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Inter:wght@300;400;500&display=swap'
 ];
 
+// ── INSTALL: guarda los archivos estáticos en caché ──
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(VERSION)
@@ -32,38 +27,49 @@ self.addEventListener('install', event => {
   );
 });
 
+// ── ACTIVATE: limpia versiones antiguas ──
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.filter(key => key !== VERSION).map(key => caches.delete(key))
+        keys
+          .filter(key => key !== VERSION)
+          .map(key => caches.delete(key))
       )
     ).then(() => self.clients.claim())
   );
 });
 
+// ── FETCH: estrategia por tipo de recurso ──
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
+
+  // Supabase y Google Fonts: siempre desde la red (datos en tiempo real)
   if (
     url.hostname.includes('supabase.co') ||
     url.hostname.includes('googleapis.com') ||
     url.hostname.includes('gstatic.com') ||
-    url.hostname.includes('youtube.com') ||
-    url.hostname.includes('onesignal.com')
+    url.hostname.includes('youtube.com')
   ) {
     event.respondWith(fetch(event.request).catch(() => new Response('')));
     return;
   }
+
+  // Archivos propios: caché primero, red como fallback
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) {
-        fetch(event.request).then(response => {
-          if (response && response.status === 200) {
-            caches.open(VERSION).then(cache => cache.put(event.request, response));
-          }
-        }).catch(() => {});
+        // Actualiza en background para la próxima visita
+        fetch(event.request)
+          .then(response => {
+            if (response && response.status === 200) {
+              caches.open(VERSION).then(cache => cache.put(event.request, response));
+            }
+          })
+          .catch(() => {});
         return cached;
       }
+      // No está en caché: va a la red y lo guarda
       return fetch(event.request).then(response => {
         if (response && response.status === 200 && event.request.method === 'GET') {
           const responseClone = response.clone();
@@ -71,6 +77,7 @@ self.addEventListener('fetch', event => {
         }
         return response;
       }).catch(() => {
+        // Sin red y sin caché: página offline
         if (event.request.destination === 'document') {
           return caches.match('/tolerancia01/index.html');
         }
@@ -79,6 +86,7 @@ self.addEventListener('fetch', event => {
   );
 });
 
+// ── MENSAJE: fuerza actualización desde la web ──
 self.addEventListener('message', event => {
   if (event.data === 'skipWaiting') self.skipWaiting();
 });
