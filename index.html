@@ -1756,7 +1756,7 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 // Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/OneSignalSDKWorker.js')
       .then(reg => {
         reg.addEventListener('updatefound', () => {
           const nw = reg.installing;
