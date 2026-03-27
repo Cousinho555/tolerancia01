@@ -17,12 +17,12 @@
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
-      appId: "a60a7d8d-eaff-43ac-8c5b-678cba2dd771",
-      serviceWorkerPath: "/tolerancia01/OneSignalSDKWorker.js",
-      serviceWorkerParam: { scope: "/tolerancia01/" },
-      notifyButton: { enable: false },
-      allowLocalhostAsSecureOrigin: true,
-    });
+  appId: "a60a7d8d-eaff-43ac-8c5b-678cba2dd771",
+  serviceWorkerPath: "OneSignalSDKWorker.js",
+  serviceWorkerParam: { scope: "/tolerancia01/" },
+  notifyButton: { enable: false },
+  allowLocalhostAsSecureOrigin: true,
+});
   });
 </script>
 <style>
