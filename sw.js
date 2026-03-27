@@ -8,13 +8,13 @@ const VERSION = 'tol01-v3';
 
 // Archivos que se guardan en caché para funcionar offline
 const STATIC_CACHE = [
-  '/tolerancia01/',
-  '/tolerancia01/index.html',
-  '/tolerancia01/logo.png',
-  '/tolerancia01/equipo.jpg',
-  '/tolerancia01/jugador1.jpg',
-  '/tolerancia01/jugador2.jpg',
-  '/tolerancia01/jugador3.jpg',
+  '/',
+  '/index.html',
+  '/logo.png',
+  '/equipo.jpg',
+  '/jugador1.jpg',
+  '/jugador2.jpg',
+  '/jugador3.jpg',
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Inter:wght@300;400;500&display=swap'
 ];
 
@@ -79,7 +79,7 @@ self.addEventListener('fetch', event => {
       }).catch(() => {
         // Sin red y sin caché: página offline
         if (event.request.destination === 'document') {
-          return caches.match('/tolerancia01/index.html');
+          return caches.match('/index.html');
         }
       });
     })
