@@ -11,6 +11,19 @@
 <meta name="apple-mobile-web-app-title" content="T01">
 <link rel="apple-touch-icon" href="icon-512.png">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- OneSignal -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "a60a7d8d-eaff-43ac-8c5b-678cba2dd771",
+      serviceWorkerPath: "/tolerancia01/OneSignalSDKWorker.js",
+      notifyButton: { enable: false },
+      allowLocalhostAsSecureOrigin: true,
+    });
+  });
+</script>
 <style>
   :root {
     --pink:#E040A0;--pink-light:#F472C0;--pink-dark:#9A1868;
@@ -418,38 +431,31 @@
     footer{padding:32px 22px}
   }
   /* ════════════════════════════
-     GLITCH SPLASH SCREEN
+     SPLASH SCREEN
   ════════════════════════════ */
-  #splash{position:fixed;inset:0;z-index:9999;background:#090909;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;pointer-events:none}
-  #splash.hide{animation:splashFadeOut .5s ease forwards}
-  @keyframes splashFadeOut{to{opacity:0}}
-  #splash-canvas{position:absolute;inset:0;width:100%;height:100%}
-  .glitch-wrap{position:relative;display:flex;flex-direction:column;align-items:center;z-index:2}
-  /* Logo de fondo con transparencia */
-  .glitch-logo-bg{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:320px;height:320px;object-fit:contain;opacity:0.18;z-index:1;pointer-events:none;filter:drop-shadow(0 0 30px rgba(224,64,160,0.3))}
-  /* Texto encima */
-  .glitch-title{font-family:'Bebas Neue',sans-serif;font-size:82px;letter-spacing:8px;color:#f0f0f0;position:relative;z-index:3;line-height:1}
-  .glitch-title span{color:#E040A0}
-  .glitch-sub{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--white,#f0f0f0);margin-top:10px;position:relative;z-index:3}
-  .glitch-sub em{color:#E040A0;font-style:normal}
-  .glitch-bar-wrap{width:140px;height:1px;background:rgba(255,255,255,0.06);margin-top:40px;position:relative;overflow:hidden;z-index:3}
-  .glitch-bar{position:absolute;inset:0;width:0%;background:#E040A0;animation:gBarFill 1.4s .3s ease forwards}
-  @keyframes gBarFill{to{width:100%}}
+  #splash{position:fixed;inset:0;z-index:9999;background:#090909;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;pointer-events:none}
+  #splash.hide{animation:splashOut .5s .1s ease both}
+  @keyframes splashOut{to{opacity:0;transform:scale(1.04)}}
+  .splash-logo{width:110px;height:110px;animation:splashLogo .6s ease both;filter:drop-shadow(0 0 28px rgba(224,64,160,0.6))}
+  @keyframes splashLogo{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+  .splash-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:6px;color:#f0f0f0;margin-top:18px;animation:splashTitle .6s .15s ease both}
+  .splash-title span{color:#E040A0}
+  @keyframes splashTitle{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  .splash-sub{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:#777;margin-top:8px;animation:splashTitle .6s .28s ease both}
+  .splash-bar-wrap{width:120px;height:2px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:36px;overflow:hidden;animation:splashTitle .6s .35s ease both}
+  .splash-bar{height:100%;width:0%;background:linear-gradient(90deg,#9A1868,#E040A0,#F472C0);border-radius:2px;animation:splashBarFill 1.1s .4s ease forwards}
+  @keyframes splashBarFill{to{width:100%}}
 </style>
 </head>
 <body>
 
-<!-- GLITCH SPLASH SCREEN -->
+<!-- SPLASH SCREEN -->
 <div id="splash">
-  <canvas id="splash-canvas"></canvas>
-  <!-- Logo de fondo con transparencia, sin glitch -->
-  <img src="logo.png" class="glitch-logo-bg" alt="" id="splash-logo-bg">
-  <!-- Contenido centrado encima -->
-  <div class="glitch-wrap">
-    <div class="glitch-title" id="splash-title">T<span>01</span></div>
-    <div class="glitch-sub"><em>Maricón</em>&nbsp;el último</div>
-    <div class="glitch-bar-wrap"><div class="glitch-bar"></div></div>
-  </div>
+  <img src="icon-512.png" class="splash-logo" alt="T01"
+       onerror="this.src='logo.png'">
+  <div class="splash-title">T<span>01</span></div>
+  <div class="splash-sub">Sin margen de error</div>
+  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
 </div>
 
 <!-- NAV -->
@@ -663,6 +669,7 @@
         <button class="admin-tab active" data-atab="resultados">⚽🎮 Resultados</button>
         <button class="admin-tab" data-atab="noticias">📰 Noticias</button>
         <button class="admin-tab" data-atab="tolerancia">✓✕ Tolerancia</button>
+        <button class="admin-tab" data-atab="notifs">🔔 Notificaciones</button>
       </div>
       <div class="admin-content">
 
@@ -793,6 +800,44 @@
           </div>
         </div>
 
+        <!-- NOTIFICACIONES -->
+        <div class="admin-pane" id="apane-notifs" style="padding:28px">
+          <div class="admin-section-title">Enviar notificación personalizada</div>
+          <div class="aform">
+            <div class="afg">
+              <label>Título</label>
+              <input id="notif-title" type="text" placeholder="Ej: ¡Victoria épica! 🏆">
+            </div>
+            <div class="afg">
+              <label>Mensaje</label>
+              <input id="notif-body" type="text" placeholder="Ej: Ganamos 4-0 al Atlético Barrio">
+            </div>
+            <div class="afg">
+              <label>Emoji (opcional)</label>
+              <input id="notif-emoji" type="text" placeholder="🔥" style="width:80px">
+            </div>
+            <button class="btn-p" style="width:100%" id="notif-submit" onclick="sendCustomNotif()">
+              🔔 Enviar a todos los usuarios
+            </button>
+            <p class="admin-success" id="notif-ok">✓ Notificación enviada correctamente</p>
+            <p class="admin-error-msg" id="notif-err">❌ Error al enviar. Comprueba la conexión.</p>
+          </div>
+          <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--dark4)">
+            <div class="admin-list-title">Notificaciones automáticas</div>
+            <div style="font-family:var(--font-body);font-size:13px;color:var(--gray-mid);line-height:1.8;margin-top:8px">
+              Se envían automáticamente cuando el admin publica:<br>
+              <span style="color:var(--green)">✓</span> Nuevo resultado &nbsp;·&nbsp;
+              <span style="color:var(--green)">✓</span> Nueva noticia &nbsp;·&nbsp;
+              <span style="color:var(--green)">✓</span> Nueva entrada en Tolerancia
+            </div>
+          </div>
+          <div style="margin-top:24px;padding:16px;background:var(--dark3);border:1px solid var(--dark4);border-radius:4px">
+            <div style="font-family:var(--font-body);font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:10px">Usuarios suscritos</div>
+            <div id="notif-subs" style="font-family:var(--font-display);font-size:36px;color:var(--pink);letter-spacing:2px">—</div>
+            <div style="font-family:var(--font-body);font-size:11px;color:var(--gray);margin-top:4px">dispositivos con notificaciones activadas</div>
+          </div>
+        </div>
+
       <div class="admin-footer">
         <button class="logout-btn" onclick="doLogout()">Cerrar sesión</button>
       </div>
@@ -806,7 +851,62 @@
 // ══════════════════════════════════════════════════
 const SUPABASE_URL = 'https://nrgsgdhuabsgyqqrjzfp.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_BeGHC7EEH1TwYLxIgkJzdA_2i61LJ1w';
-const ADMIN_PASSWORD = 'tol01admin'; // ← cámbiala cuando quieras
+const ADMIN_PASSWORD = 'tol01admin';
+const ONESIGNAL_APP_ID  = 'a60a7d8d-eaff-43ac-8c5b-678cba2dd771';
+const ONESIGNAL_API_KEY = 'os_v2_app_uyfh3dpk75b2zdc3m6gluloxoeaq4z5vok2ehceyzv6v76abbkfj55wta6ditnp3xbhbg6bagors2ngqxciflwkvvr6sq6dxszhi3bi';
+
+// ── SEND PUSH NOTIFICATION ──
+async function sendPush(title, body) {
+  try {
+    await fetch('https://api.onesignal.com/notifications', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Key ${ONESIGNAL_API_KEY}`
+      },
+      body: JSON.stringify({
+        app_id: ONESIGNAL_APP_ID,
+        included_segments: ['Total Subscriptions'],
+        headings:  { en: title, es: title },
+        contents:  { en: body,  es: body  },
+        url: 'https://cousinho555.github.io/tolerancia01/',
+        chrome_web_icon: 'https://cousinho555.github.io/tolerancia01/icon-512.png',
+        firefox_icon:    'https://cousinho555.github.io/tolerancia01/icon-512.png',
+      })
+    });
+  } catch(e) { console.log('Push error:', e); }
+}
+
+// ── SEND CUSTOM NOTIFICATION FROM ADMIN ──
+async function sendCustomNotif() {
+  const title = document.getElementById('notif-title').value.trim();
+  const body  = document.getElementById('notif-body').value.trim();
+  const emoji = document.getElementById('notif-emoji').value.trim();
+  if (!title || !body) { alert('Rellena el título y el mensaje.'); return; }
+  const btn = document.getElementById('notif-submit');
+  btn.innerHTML = '<span class="spinning">⏳</span> Enviando...';
+  btn.disabled = true;
+  const fullTitle = emoji ? `${emoji} ${title}` : title;
+  await sendPush(fullTitle, body);
+  document.getElementById('notif-title').value = '';
+  document.getElementById('notif-body').value  = '';
+  document.getElementById('notif-emoji').value = '';
+  showMsg('notif-ok');
+  btn.innerHTML = '🔔 Enviar a todos los usuarios';
+  btn.disabled = false;
+}
+
+// ── LOAD SUBSCRIBER COUNT ──
+async function loadSubCount() {
+  try {
+    const res = await fetch(`https://api.onesignal.com/apps/${ONESIGNAL_APP_ID}`, {
+      headers: { 'Authorization': `Key ${ONESIGNAL_API_KEY}` }
+    });
+    const data = await res.json();
+    const el = document.getElementById('notif-subs');
+    if (el) el.textContent = data.players || '—';
+  } catch(e) {}
+}
 
 // ╔══════════════════════════════════════════════════╗
 // ║  JUGADORES — EDITA AQUÍ CUANDO QUIERAS          ║
@@ -1085,6 +1185,12 @@ async function addResult() {
     });
     ['r-rival','r-g1','r-g2','r-comp'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('r-fecha').value = '';
+    // Push notification automática
+    const tipo = document.getElementById('r-tipo').value;
+    const emoji = tipo === 'ftb' ? '⚽' : tipo === 'pdl' ? '🎾' : '🎮';
+    const resultText = document.getElementById('r-result').value === 'w' ? '¡Victoria!' : document.getElementById('r-result').value === 'd' ? 'Empate' : 'Derrota';
+    const us = document.getElementById('r-us').value.trim();
+    sendPush(`${emoji} Nuevo resultado — ${resultText}`, `${us} ${g1} — ${g2} ${rival}`);
     showMsg('r-ok'); loadMatches(); renderAdminLists();
   } catch(e) {
     showMsg('r-err');
@@ -1183,6 +1289,9 @@ async function addNews() {
     document.getElementById('n-img-file').value = '';
     document.getElementById('n-img-preview').style.display = 'none';
     toggleMediaInput();
+    // Push notification automática
+    const tag = document.getElementById('n-tag').value;
+    sendPush(`📰 Nueva noticia — ${tag}`, titulo);
     showMsg('n-ok'); loadNews(); renderAdminLists();
   } catch(e) {
     showMsg('n-err');
@@ -1284,6 +1393,10 @@ async function addTolItem() {
       body: JSON.stringify({ tipo: document.getElementById('t-tipo').value, texto })
     });
     document.getElementById('t-texto').value = '';
+    // Push notification automática
+    const tipo = document.getElementById('t-tipo').value;
+    const emoji = tipo === 'si' ? '✅' : '🚫';
+    sendPush(`${emoji} Actualización — Tolerancia`, `${tipo === 'si' ? 'Toleramos' : 'No toleramos'}: ${texto}`);
     showMsg('t-ok');
     loadTolItems();
     renderAdminLists();
@@ -1321,6 +1434,7 @@ function showAdminContent() {
   loadTolItems();
   loadMatches();
   loadNews();
+  loadSubCount();
 }
 function doLogin() {
   if (document.getElementById('adminPass').value === ADMIN_PASSWORD) {
@@ -1565,93 +1679,15 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 </script>
 <!-- SPLASH + PWA -->
 <script>
-// ── GLITCH SPLASH ENGINE ──
+// Splash: espera a que la fuente cargue y luego desaparece
 (function() {
-  const splash  = document.getElementById('splash');
-  const canvas  = document.getElementById('splash-canvas');
-  const ctx     = canvas.getContext('2d');
-  const title   = document.getElementById('splash-title');
-  let   running = true;
-  let   frame   = 0;
-
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  function drawFX() {
-    if (!running) return;
-    frame++;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Scanlines sutiles
-    ctx.fillStyle = 'rgba(224,64,160,0.025)';
-    for (let y = 0; y < canvas.height; y += 4) {
-      ctx.fillRect(0, y, canvas.width, 1);
-    }
-
-    // Haz de luz que recorre la pantalla de arriba a abajo
-    const beamY = ((frame * 2.5) % (canvas.height + 60)) - 30;
-    const beam = ctx.createLinearGradient(0, beamY - 30, 0, beamY + 30);
-    beam.addColorStop(0,   'rgba(224,64,160,0)');
-    beam.addColorStop(0.5, 'rgba(224,64,160,0.15)');
-    beam.addColorStop(1,   'rgba(224,64,160,0)');
-    ctx.fillStyle = beam;
-    ctx.fillRect(0, beamY - 30, canvas.width, 60);
-
-    // Slices horizontales de glitch aleatorios
-    if (Math.random() < 0.07) {
-      const slices = Math.floor(Math.random() * 3) + 1;
-      for (let i = 0; i < slices; i++) {
-        const y  = Math.random() * canvas.height;
-        const h  = Math.random() * 5 + 1;
-        ctx.save();
-        ctx.globalAlpha = Math.random() * 0.3 + 0.08;
-        ctx.fillStyle = Math.random() > 0.5
-          ? 'rgba(0,255,255,0.2)'
-          : 'rgba(255,0,102,0.2)';
-        ctx.fillRect(0, y, canvas.width, h);
-        ctx.restore();
-      }
-    }
-
-    // Flash de color ocasional
-    if (Math.random() < 0.008) {
-      ctx.fillStyle = 'rgba(224,64,160,0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-
-    // Glitch en el título T01 — desplazamiento + color shift
-    if (title && Math.random() < 0.05) {
-      const dx = (Math.random() - 0.5) * 12;
-      const dy = (Math.random() - 0.5) * 3;
-      title.style.transform = `translate(${dx}px,${dy}px) skewX(${(Math.random()-0.5)*4}deg)`;
-      title.style.textShadow = Math.random() > 0.5
-        ? '4px 0 #ff0066, -4px 0 #00ffff'
-        : '-3px 0 #00ffff, 3px 0 #ff0066';
-      setTimeout(() => {
-        if (title) {
-          title.style.transform = '';
-          title.style.textShadow = '';
-        }
-      }, 80);
-    }
-
-    requestAnimationFrame(drawFX);
-  }
-
-  drawFX();
-
-  // Oculta tras 2.4s
+  const splash = document.getElementById('splash');
   function hideSplash() {
-    running = false;
     splash.classList.add('hide');
-    setTimeout(() => { splash.style.display = 'none'; }, 520);
+    setTimeout(() => splash.style.display = 'none', 620);
   }
-
-  const minTime = new Promise(r => setTimeout(r, 2400));
+  // Mínimo 1.4s para que se vea la animación completa
+  const minTime = new Promise(r => setTimeout(r, 1400));
   const loaded  = new Promise(r => {
     if (document.readyState === 'complete') r();
     else window.addEventListener('load', r);
