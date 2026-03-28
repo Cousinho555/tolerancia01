@@ -503,43 +503,7 @@
 .vol-slider{-webkit-appearance:none;width:48px;height:2px;background:rgba(255,255,255,0.15);border-radius:1px;outline:none;cursor:pointer}
 .vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--pink);cursor:pointer}
 .vol-icon{font-size:11px;color:var(--gray)}
-/* ── MOBILE: FAB disc + slide-up player ── */
-@media(max-width:760px){
-  #music-player{
-    bottom:20px;right:20px;
-    align-items:flex-end;
-    gap:0;
-  }
-
-  /* Playlist stays similar but narrower */
-  #music-playlist{
-    width:calc(100vw - 40px);
-    max-width:320px;
-    margin-bottom:12px;
-    transform-origin:bottom right;
-  }
-
-  /* Full mini player hidden by default on mobile */
-  #music-mini{
-    display:none;
-    width:calc(100vw - 40px);
-    max-width:320px;
-    margin-bottom:12px;
-  }
-  #music-mini.mob-open{
-    display:flex;
-  }
-
-  /* Hide volume slider on mobile */
-  .vol-wrap{ display:none !important; }
-
-  /* FAB disc button */
-  #mob-fab{
-    display:flex;
-  }
-}
-
-/* FAB element — hidden on desktop */
+/* ── FAB disc button — base (hidden on desktop) ── */
 #mob-fab{
   display:none;
   width:52px;height:52px;
@@ -575,7 +539,6 @@
   background:var(--pink);
   box-shadow:0 0 6px rgba(224,64,160,0.9);
 }
-/* Pulse ring when playing */
 #mob-fab.playing::before{
   content:'';position:absolute;inset:-4px;border-radius:50%;
   border:2px solid rgba(224,64,160,0.4);
@@ -584,6 +547,37 @@
 @keyframes fabPulse{
   0%,100%{transform:scale(1);opacity:.5}
   50%{transform:scale(1.12);opacity:1}
+}
+
+/* ── MOBILE: FAB disc + slide-up player ── */
+@media(max-width:760px){
+  #music-player{
+    bottom:20px;right:20px;
+    align-items:flex-end;
+    gap:0;
+  }
+  #music-playlist{
+    width:calc(100vw - 40px);
+    max-width:320px;
+    margin-bottom:12px;
+    transform-origin:bottom right;
+  }
+  /* Full mini player hidden by default on mobile */
+  #music-mini{
+    display:none;
+    width:calc(100vw - 40px);
+    max-width:320px;
+    margin-bottom:12px;
+  }
+  #music-mini.mob-open{
+    display:flex;
+  }
+  /* Hide volume slider on mobile */
+  .vol-wrap{ display:none !important; }
+  /* Show FAB on mobile */
+  #mob-fab{
+    display:flex;
+  }
 }
 </style>
 </head>
