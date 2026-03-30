@@ -17,11 +17,16 @@
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
-  appId: "a60a7d8d-eaff-43ac-8c5b-678cba2dd771",
-  serviceWorkerPath: "OneSignalSDKWorker.js",
-  notifyButton: { enable: false },
-  allowLocalhostAsSecureOrigin: true,
-});
+      appId: "a60a7d8d-eaff-43ac-8c5b-678cba2dd771",
+      serviceWorkerPath: "OneSignalSDKWorker.js",
+      notifyButton: { enable: false },
+      allowLocalhostAsSecureOrigin: true,
+    });
+    // Taggear usuario para poder segmentarlo en mensajes In-App desde OneSignal
+    try {
+      const hoy = new Date().toISOString().slice(0, 10);
+      OneSignal.User.addTags({ ultima_visita: hoy, plataforma: 'pwa' });
+    } catch(e) {}
   });
 </script>
 <style>
