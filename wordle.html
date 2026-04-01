@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T01 WORDLE — Tolerancia 0'1</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink: #E040A0;
+  --pink-light: #F472C0;
+  --pink-dark: #9A1868;
+  --dark: #090909;
+  --dark2: #101010;
+  --dark3: #181818;
+  --dark4: #242424;
+  --gray: #777;
+  --gray-mid: #999;
+  --gray-light: #bbb;
+  --white: #f0f0f0;
+  --green: #00d250;
+  --yellow: #f5c400;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-ui: 'Rajdhani', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--dark);
+  color: var(--white);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid background */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(224,64,160,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(224,64,160,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: rgba(9,9,9,0.96);
+  border-bottom: 1px solid rgba(224,64,160,0.25);
+  backdrop-filter: blur(16px);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.nav-logo-text {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: var(--white);
+}
+.nav-logo-text span { color: var(--pink); }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-back {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  text-decoration: none;
+  transition: color .2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-back:hover { color: var(--pink); }
+
+.nav-date {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--gray);
+  letter-spacing: 1px;
+  border: 1px solid var(--dark4);
+  padding: 4px 12px;
+  border-radius: 2px;
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 20px 40px;
+}
+
+/* ── SCREEN: PLAYER PICK ── */
+#screen-pick {
+  width: 100%;
+  max-width: 440px;
+  margin: auto;
+  text-align: center;
+  animation: fadeUp .5s ease both;
+}
+
+.pick-eyebrow {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 12px;
+}
+
+.pick-title {
+  font-family: var(--font-display);
+  font-size: 72px;
+  letter-spacing: 4px;
+  line-height: .9;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.pick-title span { color: var(--pink); }
+
+.pick-sub {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 48px;
+}
+
+.pick-rule {
+  width: 40px;
+  height: 2px;
+  background: var(--pink);
+  margin: 0 auto 40px;
+}
+
+.pick-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+  margin-bottom: 20px;
+}
+
+.pick-players {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pick-btn {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 24px;
+  background: var(--dark3);
+  border: 1px solid var(--dark4);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color .2s, transform .2s, background .2s;
+  text-align: left;
+  width: 100%;
+}
+.pick-btn:hover {
+  border-color: rgba(224,64,160,.5);
+  background: rgba(224,64,160,.05);
+  transform: translateX(4px);
+}
+
+.pick-btn-num {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: rgba(224,64,160,.3);
+  letter-spacing: 1px;
+  min-width: 36px;
+}
+
+.pick-btn-info { flex: 1; }
+.pick-btn-name {
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: 2px;
+  color: var(--white);
+  line-height: 1;
+}
+.pick-btn-nick {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+.pick-btn-arrow {
+  font-size: 18px;
+  color: var(--pink);
+  opacity: 0;
+  transition: opacity .2s, transform .2s;
+}
+.pick-btn:hover .pick-btn-arrow { opacity: 1; transform: translateX(4px); }
+
+/* ── SCREEN: GAME ── */
+#screen-game {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: fadeUp .4s ease both;
+}
+
+.game-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--dark4);
+}
+
+.game-player-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.player-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pink);
+  box-shadow: 0 0 8px rgba(224,64,160,.6);
+}
+.game-player-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: var(--white);
+}
+.game-player-nick {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--gray);
+}
+
+.game-meta {
+  text-align: right;
+}
+.game-word-len {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--pink);
+}
+.game-word-hint {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--gray);
+  letter-spacing: 1px;
+}
+
+/* ── WORDLE GRID ── */
+#wordle-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  align-items: center;
+}
+
+.wordle-row {
+  display: flex;
+  gap: 6px;
+}
+
+.wordle-cell {
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--dark4);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 30px;
+  letter-spacing: 1px;
+  color: var(--white);
+  background: var(--dark3);
+  transition: border-color .15s, transform .1s;
+  position: relative;
+  overflow: hidden;
+}
+
+.wordle-cell.filled {
+  border-color: rgba(224,64,160,.4);
+  animation: cellPop .1s ease both;
+}
+
+.wordle-cell.correct {
+  background: rgba(0,210,80,.15);
+  border-color: var(--green);
+  color: var(--green);
+  animation: flipIn .4s ease both;
+}
+
+.wordle-cell.present {
+  background: rgba(245,196,0,.1);
+  border-color: var(--yellow);
+  color: var(--yellow);
+  animation: flipIn .4s ease both;
+}
+
+.wordle-cell.absent {
+  background: var(--dark4);
+  border-color: var(--dark4);
+  color: var(--gray);
+  animation: flipIn .4s ease both;
+}
+
+.wordle-cell.shake {
+  animation: shake .4s ease both;
+}
+
+@keyframes cellPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes flipIn {
+  0% { transform: rotateX(0deg); }
+  50% { transform: rotateX(-90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ── KEYBOARD ── */
+#keyboard {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.kb-row {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.kb-key {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--dark4);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 3px;
+  padding: 0;
+  height: 48px;
+  min-width: 34px;
+  flex: 1;
+  max-width: 42px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kb-key:active { transform: scale(.92); }
+
+.kb-key.wide {
+  min-width: 58px;
+  max-width: 68px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+}
+
+.kb-key.correct {
+  background: rgba(0,210,80,.25);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.kb-key.present {
+  background: rgba(245,196,0,.18);
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+
+.kb-key.absent {
+  background: rgba(255,255,255,.03);
+  border-color: rgba(255,255,255,.04);
+  color: var(--gray);
+}
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: var(--white);
+  color: var(--dark);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border-radius: 3px;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  white-space: nowrap;
+}
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── RESULT PANEL ── */
+#screen-result {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  animation: fadeUp .5s ease both;
+}
+
+.result-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.result-emoji {
+  font-size: 52px;
+  margin-bottom: 12px;
+  animation: bounceIn .6s ease both;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.result-title {
+  font-family: var(--font-display);
+  font-size: 52px;
+  letter-spacing: 3px;
+  line-height: .9;
+  color: var(--white);
+}
+.result-title.win { color: var(--green); }
+.result-title.lose { color: var(--pink-light); }
+
+.result-word {
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 6px;
+  color: var(--pink-light);
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.result-sub {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--gray);
+  letter-spacing: 2px;
+}
+
+/* Grid replay on result */
+.result-grid-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+/* ── LEADERBOARD ── */
+.leaderboard {
+  background: var(--dark3);
+  border: 1px solid var(--dark4);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.lb-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(224,64,160,.06);
+  border-bottom: 1px solid rgba(224,64,160,.15);
+}
+
+.lb-header-icon {
+  font-size: 18px;
+}
+
+.lb-header-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: var(--white);
+}
+
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  transition: background .15s;
+}
+.lb-row:last-child { border-bottom: none; }
+.lb-row:hover { background: rgba(255,255,255,.02); }
+.lb-row.me { background: rgba(224,64,160,.07); }
+
+.lb-pos {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--gray);
+  min-width: 24px;
+}
+.lb-pos.gold { color: #ffd700; }
+.lb-pos.silver { color: #c0c0c0; }
+.lb-pos.bronze { color: #cd7f32; }
+
+.lb-name {
+  flex: 1;
+}
+.lb-name-main {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: var(--white);
+  line-height: 1;
+}
+.lb-name-nick {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--gray);
+}
+
+.lb-stats {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.lb-stat {
+  text-align: center;
+}
+.lb-stat-val {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--pink);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.lb-stat-lbl {
+  font-family: var(--font-body);
+  font-size: 9px;
+  color: var(--gray);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.lb-today {
+  font-family: var(--font-body);
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 2px;
+  border: 1px solid rgba(0,210,80,.3);
+  color: var(--green);
+  background: rgba(0,210,80,.07);
+  white-space: nowrap;
+}
+.lb-today.failed {
+  border-color: rgba(224,64,160,.3);
+  color: var(--pink-light);
+  background: rgba(224,64,160,.07);
+}
+.lb-today.pending {
+  border-color: var(--dark4);
+  color: var(--gray);
+  background: transparent;
+}
+
+/* ── NEXT WORD COUNTDOWN ── */
+.next-word {
+  text-align: center;
+  padding: 20px;
+  background: var(--dark3);
+  border: 1px solid var(--dark4);
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.next-word-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+.next-word-time {
+  font-family: var(--font-display);
+  font-size: 40px;
+  letter-spacing: 4px;
+  color: var(--pink);
+}
+
+/* ── DISTRIBUTION ── */
+.dist-wrap {
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--dark4);
+}
+
+.dist-title {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 12px;
+}
+
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.dist-label {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--gray-light);
+  min-width: 14px;
+  text-align: right;
+}
+
+.dist-bar-wrap {
+  flex: 1;
+  height: 18px;
+  background: rgba(255,255,255,.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.dist-bar {
+  height: 100%;
+  background: var(--pink);
+  border-radius: 2px;
+  min-width: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+  transition: width 1s cubic-bezier(.4,0,.2,1);
+}
+
+.dist-bar.highlight { background: var(--green); }
+
+.dist-bar-val {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,.8);
+}
+
+/* ── CHANGE PLAYER BTN ── */
+.change-player-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray);
+  background: none;
+  border: 1px solid var(--dark4);
+  padding: 11px 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+}
+.change-player-btn:hover { color: var(--pink); border-color: rgba(224,64,160,.4); }
+
+/* ── ALREADY PLAYED ── */
+#screen-already {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  animation: fadeUp .4s ease both;
+}
+
+.already-banner {
+  text-align: center;
+  padding: 32px 24px 24px;
+  background: var(--dark3);
+  border: 1px solid var(--dark4);
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.already-icon { font-size: 40px; margin-bottom: 12px; }
+.already-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  letter-spacing: 2px;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.already-sub {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--gray-mid);
+  line-height: 1.6;
+}
+
+/* ── LOADING ── */
+#screen-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 60vh;
+}
+
+.loading-disc {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--dark4);
+  border-top-color: var(--pink);
+  animation: spin .8s linear infinite;
+}
+
+.loading-text {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+  .wordle-cell {
+    width: 46px;
+    height: 46px;
+    font-size: 24px;
+  }
+  .kb-key {
+    height: 42px;
+    min-width: 28px;
+    font-size: 13px;
+  }
+  .kb-key.wide {
+    min-width: 50px;
+    font-size: 10px;
+  }
+  nav { padding: 0 16px; }
+  .main { padding: 70px 14px 32px; }
+  .lb-stats { gap: 10px; }
+}
+
+@media (max-width: 360px) {
+  .wordle-cell { width: 38px; height: 38px; font-size: 20px; }
+  .kb-key { min-width: 24px; height: 38px; font-size: 11px; }
+  .kb-key.wide { min-width: 42px; font-size: 9px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="logo.png" alt="T01" style="width:30px;height:30px;object-fit:contain" onerror="this.style.display='none'">
+    <span class="nav-logo-text">T<span>01</span> · WORDLE</span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-date" id="nav-date"></span>
+    <a href="index.html" class="nav-back">← Volver</a>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MAIN -->
+<main class="main" id="main">
+
+  <!-- LOADING -->
+  <div id="screen-loading">
+    <div class="loading-disc"></div>
+    <div class="loading-text">Cargando…</div>
+  </div>
+
+  <!-- PICK PLAYER (hidden by default) -->
+  <div id="screen-pick" style="display:none">
+    <div class="pick-eyebrow">Elige tu personaje</div>
+    <div class="pick-title">T<span>01</span><br>WORDLE</div>
+    <div class="pick-sub">¿Quién eres hoy?</div>
+    <div class="pick-rule"></div>
+    <div class="pick-label">Selecciona tu jugador</div>
+    <div class="pick-players" id="pick-players"></div>
+  </div>
+
+  <!-- GAME (hidden by default) -->
+  <div id="screen-game" style="display:none">
+    <div class="game-header">
+      <div class="game-player-badge">
+        <div class="player-dot"></div>
+        <div>
+          <div class="game-player-name" id="game-player-name"></div>
+          <div class="game-player-nick" id="game-player-nick"></div>
+        </div>
+      </div>
+      <div class="game-meta">
+        <div class="game-word-len" id="game-word-len"></div>
+        <div class="game-word-hint">letras · máx 6 intentos</div>
+      </div>
+    </div>
+
+    <div id="wordle-grid"></div>
+    <div id="keyboard"></div>
+
+    <div id="rules-hint" style="font-family:var(--font-body);font-size:11px;color:var(--gray);text-align:center;line-height:1.7;letter-spacing:.5px">
+      🟩 Letra correcta en su sitio &nbsp;·&nbsp; 🟨 Letra presente, mal posición &nbsp;·&nbsp; ⬛ Letra no existe
+    </div>
+  </div>
+
+  <!-- RESULT (hidden by default) -->
+  <div id="screen-result" style="display:none"></div>
+
+  <!-- ALREADY PLAYED (hidden by default) -->
+  <div id="screen-already" style="display:none"></div>
+
+</main>
+
+<script>
+// ══════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════
+const SUPABASE_URL = 'https://nrgsgdhuabsgyqqrjzfp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_BeGHC7EEH1TwYLxIgkJzdA_2i61LJ1w';
+
+// ── JUGADORES ──
+const PLAYERS = [
+  { id: 'pablo',   name: 'PABLO COUSO',    nick: '"Cousinho"',  num: '01', color: '#E040A0' },
+  { id: 'lorenzo', name: 'LORENZO GARCIA', nick: '"La Oruga"',  num: '02', color: '#F472C0' },
+  { id: 'ignacio', name: 'IGNACIO PUENTE', nick: '"GatoPija"',  num: '03', color: '#9A1868' },
+];
+
+// ══════════════════════════════════════════════════
+// LISTA DE PALABRAS — EDITA AQUÍ CUANDO QUIERAS
+// Pueden ser de cualquier longitud (sin tildes en la lógica)
+// ══════════════════════════════════════════════════
+const WORD_LIST = [
+  // 5 letras
+  "COHOP", "ATUNE", "BRASA", "PÁDEL", "GOLES", "RONCA", "TÁCTI", "CAMPO",
+  "RONDA", "LARGO", "FALTA", "TIROS", "BOLAS", "RUEDA", "CAÑON",
+  // 6 letras
+  "FÚTBOL", "COHETE", "CASCOS", "TÁCTICAS", "TORNEO", "COHOPA",
+  "PAREJA", "REBOTE", "REGATE", "COHETE", "ÁRBITRO"[0] + "RBITR",
+  // palabras del universo T01
+  "COUSINHO", "LAORUGA", "GATOPIJA",
+  "CEREALES", "BARBACOA", "PINGONIG",
+  "TOLERAN", "ROCKET", "CSGO",
+  "BRONCE", "DERROTA", "VICTORIA",
+  "NEVERA", "LORENZP", "IGNACIO",
+  "FARMIN", "VIVIDO",
+  // 4 letras
+  "PING", "GATO", "GOAL", "GAME", "LIGA",
+  // 7 letras
+  "MARICON", "JUGADOR", "ESPORTS", "TORNEOP",
+  // más palabras únicas
+  "CLASICO", "TACTICO", "PORTERO", "DEFENSA",
+  "ATAQUE", "PASE", "TIRO", "DRIBLING"[0]+"RIBLIN",
+  "BONUS", "COMBO", "EQUIPO", "ESCUDO",
+].map(w => w.toUpperCase().replace(/Á/g,'A').replace(/É/g,'E').replace(/Í/g,'I').replace(/Ó/g,'O').replace(/Ú/g,'U').replace(/Ñ/g,'N'));
+
+// Deduplica y limpia
+const WORDS = [...new Set(WORD_LIST.filter(w => w.length >= 3 && w.length <= 10))];
+
+// ══════════════════════════════════════════════════
+// SUPABASE HELPERS
+// ══════════════════════════════════════════════════
+async function sbFetch(path, opts = {}) {
+  const url = SUPABASE_URL + '/rest/v1/' + path;
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': opts.prefer || 'return=representation',
+    ...opts.headers
+  };
+  const res = await fetch(url, { method: opts.method || 'GET', headers, body: opts.body });
+  if (res.status === 204) return [];
+  return res.json();
+}
+
+// ══════════════════════════════════════════════════
+// DATE HELPERS
+// ══════════════════════════════════════════════════
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function todayDisplay() {
+  const d = new Date();
+  const days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  return `${days[d.getDay()]} ${d.getDate()} de ${months[d.getMonth()]} · ${d.getFullYear()}`;
+}
+
+// Tiempo hasta medianoche
+function timeUntilMidnight() {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  let diff = Math.floor((midnight - now) / 1000);
+  const h = Math.floor(diff / 3600); diff %= 3600;
+  const m = Math.floor(diff / 60);
+  const s = diff % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+// ══════════════════════════════════════════════════
+// WORD SELECTION (sin repetir hasta agotar todas)
+// Usa un hash de la fecha como índice en un array shuffled con semilla
+// ══════════════════════════════════════════════════
+function seededShuffle(arr, seed) {
+  const a = [...arr];
+  let s = seed;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    const j = Math.abs(s) % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getDayIndex(dateStr) {
+  // Days since epoch
+  const d = new Date(dateStr + 'T12:00:00');
+  const epoch = new Date('2024-01-01T12:00:00');
+  return Math.floor((d - epoch) / 86400000);
+}
+
+function getTodayWord() {
+  const today = todayStr();
+  const dayIdx = getDayIndex(today);
+  // Fixed seed so shuffle is reproducible
+  const SEED = 42424242;
+  const shuffled = seededShuffle(WORDS, SEED);
+  const idx = dayIdx % shuffled.length;
+  return shuffled[idx];
+}
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let currentPlayer = null;
+let targetWord    = '';
+let currentRow    = 0;
+let currentCol    = 0;
+let guesses       = []; // array of strings
+let gameOver      = false;
+let keyStates     = {}; // letter → 'correct'|'present'|'absent'
+const MAX_ROWS    = 6;
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+async function init() {
+  document.getElementById('nav-date').textContent = todayDisplay();
+  targetWord = getTodayWord();
+
+  // Check local storage for player
+  const savedPlayer = localStorage.getItem('t01_wordle_player');
+  if (savedPlayer && PLAYERS.find(p => p.id === savedPlayer)) {
+    currentPlayer = PLAYERS.find(p => p.id === savedPlayer);
+    await checkAndStart();
+  } else {
+    showScreen('pick');
+  }
+}
+
+async function checkAndStart() {
+  showScreen('loading');
+  // Check if already played today
+  const today = todayStr();
+  const lsKey = `t01_wordle_${currentPlayer.id}_${today}`;
+  const cached = localStorage.getItem(lsKey);
+
+  if (cached) {
+    const data = JSON.parse(cached);
+    showAlreadyPlayed(data);
+    return;
+  }
+
+  // Also check Supabase (in case they cleared localStorage)
+  try {
+    const rows = await sbFetch(`wordle_scores?player_id=eq.${currentPlayer.id}&date=eq.${today}&select=*`);
+    if (rows && rows.length > 0) {
+      const data = rows[0];
+      localStorage.setItem(lsKey, JSON.stringify(data));
+      showAlreadyPlayed(data);
+      return;
+    }
+  } catch(e) { /* offline, continue */ }
+
+  showScreen('game');
+  startGame();
+}
+
+// ══════════════════════════════════════════════════
+// GAME START
+// ══════════════════════════════════════════════════
+function startGame() {
+  guesses = [];
+  currentRow = 0;
+  currentCol = 0;
+  gameOver = false;
+  keyStates = {};
+
+  // Header
+  document.getElementById('game-player-name').textContent = currentPlayer.name;
+  document.getElementById('game-player-nick').textContent = currentPlayer.nick;
+  document.getElementById('game-word-len').textContent = targetWord.length;
+
+  buildGrid();
+  buildKeyboard();
+
+  // Physical keyboard
+  document.addEventListener('keydown', handleKeyDown);
+}
+
+// ══════════════════════════════════════════════════
+// GRID
+// ══════════════════════════════════════════════════
+function buildGrid() {
+  const grid = document.getElementById('wordle-grid');
+  grid.innerHTML = '';
+
+  // Calculate cell size based on word length
+  const wLen = targetWord.length;
+  let cellSize = 56;
+  if (wLen >= 7) cellSize = 46;
+  if (wLen >= 9) cellSize = 38;
+
+  for (let r = 0; r < MAX_ROWS; r++) {
+    const row = document.createElement('div');
+    row.className = 'wordle-row';
+    row.id = 'row-' + r;
+    for (let c = 0; c < wLen; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'wordle-cell';
+      cell.id = `cell-${r}-${c}`;
+      cell.style.width = cellSize + 'px';
+      cell.style.height = cellSize + 'px';
+      cell.style.fontSize = Math.max(16, cellSize * 0.5) + 'px';
+      row.appendChild(cell);
+    }
+    grid.appendChild(row);
+  }
+}
+
+// ══════════════════════════════════════════════════
+// KEYBOARD
+// ══════════════════════════════════════════════════
+const KB_ROWS = [
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L','Ñ'],
+  ['ENTER','Z','X','C','V','B','N','M','⌫'],
+];
+
+function buildKeyboard() {
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  KB_ROWS.forEach(row => {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'kb-row';
+    row.forEach(key => {
+      const btn = document.createElement('button');
+      btn.className = 'kb-key' + (['ENTER','⌫'].includes(key) ? ' wide' : '');
+      btn.textContent = key;
+      btn.dataset.key = key;
+      btn.addEventListener('click', () => handleInput(key));
+      rowEl.appendChild(btn);
+    });
+    kb.appendChild(rowEl);
+  });
+}
+
+function updateKeyboard(letter, state) {
+  const priority = { correct: 3, present: 2, absent: 1 };
+  if ((priority[state] || 0) > (priority[keyStates[letter]] || 0)) {
+    keyStates[letter] = state;
+  }
+  document.querySelectorAll(`.kb-key`).forEach(btn => {
+    if (btn.dataset.key === letter) {
+      btn.classList.remove('correct','present','absent');
+      btn.classList.add(keyStates[letter]);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════
+// INPUT HANDLING
+// ══════════════════════════════════════════════════
+function handleKeyDown(e) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const key = e.key.toUpperCase();
+  if (key === 'ENTER') handleInput('ENTER');
+  else if (key === 'BACKSPACE') handleInput('⌫');
+  else if (/^[A-ZÑ]$/.test(key)) handleInput(key);
+}
+
+function handleInput(key) {
+  if (gameOver) return;
+  const wLen = targetWord.length;
+
+  if (key === '⌫') {
+    if (currentCol > 0) {
+      currentCol--;
+      const cell = document.getElementById(`cell-${currentRow}-${currentCol}`);
+      cell.textContent = '';
+      cell.classList.remove('filled');
+    }
+    return;
+  }
+
+  if (key === 'ENTER') {
+    if (currentCol < wLen) {
+      shakeRow(currentRow);
+      showToast('Completa la palabra');
+      return;
+    }
+    submitGuess();
+    return;
+  }
+
+  // Letter — map Ñ for comparison
+  const letter = key.replace('Ñ', 'N'); // words don't use Ñ internally
+  if (currentCol < wLen) {
+    const cell = document.getElementById(`cell-${currentRow}-${currentCol}`);
+    cell.textContent = key; // show original including Ñ
+    cell.classList.add('filled');
+    currentCol++;
+  }
+}
+
+// ══════════════════════════════════════════════════
+// GUESS EVALUATION
+// ══════════════════════════════════════════════════
+function submitGuess() {
+  const wLen = targetWord.length;
+  let guess = '';
+  for (let c = 0; c < wLen; c++) {
+    guess += document.getElementById(`cell-${currentRow}-${c}`).textContent;
+  }
+
+  // Normalize: Ñ→N for comparison
+  const guessNorm = guess.replace(/Ñ/g,'N');
+
+  // Evaluate
+  const result = evaluateGuess(guessNorm, targetWord);
+  const delays = [];
+
+  // Animate cells
+  for (let c = 0; c < wLen; c++) {
+    const cell = document.getElementById(`cell-${currentRow}-${c}`);
+    const delay = c * 0.12;
+    delays.push(delay);
+    setTimeout(() => {
+      cell.style.transitionDelay = '0s';
+      cell.classList.add(result[c]);
+    }, delay * 1000 + 50);
+    setTimeout(() => {
+      updateKeyboard(guessNorm[c], result[c]);
+    }, delay * 1000 + 350);
+  }
+
+  guesses.push(guessNorm);
+  const won = result.every(r => r === 'correct');
+
+  setTimeout(() => {
+    if (won) {
+      endGame(true);
+    } else if (currentRow + 1 >= MAX_ROWS) {
+      endGame(false);
+    } else {
+      currentRow++;
+      currentCol = 0;
+    }
+  }, wLen * 130 + 400);
+}
+
+function evaluateGuess(guess, target) {
+  const result = Array(target.length).fill('absent');
+  const targetArr = target.split('');
+  const guessArr  = guess.split('');
+  const used = Array(target.length).fill(false);
+
+  // First pass: exact
+  for (let i = 0; i < target.length; i++) {
+    if (guessArr[i] === targetArr[i]) {
+      result[i] = 'correct';
+      used[i] = true;
+    }
+  }
+
+  // Second pass: present
+  for (let i = 0; i < target.length; i++) {
+    if (result[i] === 'correct') continue;
+    for (let j = 0; j < target.length; j++) {
+      if (!used[j] && guessArr[i] === targetArr[j]) {
+        result[i] = 'present';
+        used[j] = true;
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+// ══════════════════════════════════════════════════
+// END GAME
+// ══════════════════════════════════════════════════
+async function endGame(won) {
+  gameOver = true;
+  document.removeEventListener('keydown', handleKeyDown);
+
+  const attempts = won ? currentRow + 1 : null;
+  const today = todayStr();
+
+  const scoreData = {
+    player_id: currentPlayer.id,
+    date: today,
+    word: targetWord,
+    won: won,
+    attempts: attempts,
+    guesses: guesses,
+  };
+
+  // Save locally first
+  const lsKey = `t01_wordle_${currentPlayer.id}_${today}`;
+  localStorage.setItem(lsKey, JSON.stringify(scoreData));
+
+  // Save to Supabase
+  try {
+    await sbFetch('wordle_scores', {
+      method: 'POST',
+      body: JSON.stringify(scoreData),
+      prefer: 'return=minimal'
+    });
+  } catch(e) { /* offline */ }
+
+  setTimeout(() => showResult(won, attempts), 400);
+}
+
+// ══════════════════════════════════════════════════
+// RESULT SCREEN
+// ══════════════════════════════════════════════════
+async function showResult(won, attempts) {
+  showScreen('result');
+
+  const today = todayStr();
+  let scores = [];
+  try {
+    scores = await sbFetch(`wordle_scores?date=eq.${today}&select=*`);
+  } catch(e) {}
+
+  // Also check localStorage for players who might not have synced
+  PLAYERS.forEach(p => {
+    const lsKey = `t01_wordle_${p.id}_${today}`;
+    const cached = localStorage.getItem(lsKey);
+    if (cached && !scores.find(s => s.player_id === p.id)) {
+      scores.push(JSON.parse(cached));
+    }
+  });
+
+  renderResultScreen(won, attempts, scores);
+}
+
+function renderResultScreen(won, attempts, scores) {
+  const grid = buildResultGrid();
+  const lb   = buildLeaderboard(scores);
+  const dist = buildDistribution();
+  const countdown = buildCountdown();
+
+  const el = document.getElementById('screen-result');
+  el.innerHTML = `
+    <div class="result-header">
+      <div class="result-emoji">${won ? (attempts === 1 ? '🤯' : attempts <= 3 ? '🔥' : '😅') : '💀'}</div>
+      <div class="result-title ${won ? 'win' : 'lose'}">${won ? 'VICTORIA' : 'DERROTA'}</div>
+      <div class="result-word">${targetWord}</div>
+      <div class="result-sub">${won ? `Adivinada en ${attempts} intento${attempts !== 1 ? 's' : ''}` : 'No la pillaste hoy — mañana más'}</div>
+    </div>
+    <div class="result-grid-wrap" id="result-grid">${grid}</div>
+    ${lb}
+    ${countdown}
+    <button class="change-player-btn" onclick="changePlayer()">↩ Cambiar jugador</button>
+  `;
+
+  startCountdown();
+}
+
+function buildResultGrid() {
+  // Mini grid showing emojis of guesses
+  const wLen = targetWord.length;
+  let html = `<div style="display:flex;flex-direction:column;gap:4px;align-items:center">`;
+  guesses.forEach(guess => {
+    const result = evaluateGuess(guess, targetWord);
+    html += `<div style="display:flex;gap:3px">`;
+    result.forEach(r => {
+      const color = r === 'correct' ? '#00d250' : r === 'present' ? '#f5c400' : '#242424';
+      const border = r === 'correct' ? '#00d250' : r === 'present' ? '#f5c400' : '#333';
+      html += `<div style="width:22px;height:22px;background:${color};border:1px solid ${border};border-radius:2px"></div>`;
+    });
+    html += `</div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+
+async function buildLeaderboard(scores) {
+  // Get all-time stats
+  let allStats = {};
+  try {
+    const all = await sbFetch(`wordle_scores?select=*`);
+    PLAYERS.forEach(p => {
+      const pScores = all.filter(s => s.player_id === p.id);
+      const wins    = pScores.filter(s => s.won).length;
+      const streak  = calcStreak(pScores);
+      allStats[p.id] = { wins, streak, total: pScores.length };
+    });
+  } catch(e) {
+    PLAYERS.forEach(p => { allStats[p.id] = { wins: 0, streak: 0, total: 0 }; });
+  }
+
+  // Sort by wins
+  const sorted = [...PLAYERS].sort((a, b) => (allStats[b.id]?.wins || 0) - (allStats[a.id]?.wins || 0));
+  const medals = ['gold','silver','bronze'];
+
+  let html = `<div class="leaderboard"><div class="lb-header"><span class="lb-header-icon">🏆</span><span class="lb-header-title">CLASIFICACIÓN</span></div>`;
+
+  sorted.forEach((p, i) => {
+    const stats   = allStats[p.id] || { wins: 0, streak: 0, total: 0 };
+    const todayScore = scores.find(s => s.player_id === p.id);
+    const isMe    = p.id === currentPlayer?.id;
+
+    let todayBadge = `<span class="lb-today pending">Pendiente</span>`;
+    if (todayScore) {
+      todayBadge = todayScore.won
+        ? `<span class="lb-today">${todayScore.attempts}/${MAX_ROWS}</span>`
+        : `<span class="lb-today failed">X/${MAX_ROWS}</span>`;
+    }
+
+    html += `<div class="lb-row${isMe ? ' me' : ''}">
+      <div class="lb-pos ${medals[i]}">${i + 1}</div>
+      <div class="lb-name">
+        <div class="lb-name-main">${p.name.split(' ')[0]}</div>
+        <div class="lb-name-nick">${p.nick}</div>
+      </div>
+      <div class="lb-stats">
+        <div class="lb-stat">
+          <div class="lb-stat-val">${stats.wins}</div>
+          <div class="lb-stat-lbl">Victorias</div>
+        </div>
+        <div class="lb-stat">
+          <div class="lb-stat-val">${stats.streak}</div>
+          <div class="lb-stat-lbl">Racha</div>
+        </div>
+        ${todayBadge}
+      </div>
+    </div>`;
+  });
+
+  html += `</div>`;
+  return html;
+}
+
+function buildDistribution() {
+  // Read from localStorage for current player
+  const dist = Array(MAX_ROWS + 1).fill(0); // index = attempt count, 0 = failed
+  const allKeys = Object.keys(localStorage).filter(k => k.startsWith(`t01_wordle_${currentPlayer.id}_`));
+  allKeys.forEach(k => {
+    const d = JSON.parse(localStorage.getItem(k));
+    if (d.won && d.attempts) dist[d.attempts] = (dist[d.attempts] || 0) + 1;
+    else dist[0] = (dist[0] || 0) + 1;
+  });
+
+  const max = Math.max(...dist, 1);
+  let html = `<div class="dist-wrap"><div class="dist-title">— Distribución de intentos —</div>`;
+  for (let i = 1; i <= MAX_ROWS; i++) {
+    const pct = Math.max(5, Math.round((dist[i] / max) * 100));
+    html += `<div class="dist-row">
+      <div class="dist-label">${i}</div>
+      <div class="dist-bar-wrap">
+        <div class="dist-bar" style="width:${pct}%">
+          <span class="dist-bar-val">${dist[i]}</span>
+        </div>
+      </div>
+    </div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function buildCountdown() {
+  return `<div class="next-word">
+    <div class="next-word-label">Siguiente palabra en</div>
+    <div class="next-word-time" id="countdown">00:00:00</div>
+  </div>`;
+}
+
+function startCountdown() {
+  function tick() {
+    const el = document.getElementById('countdown');
+    if (el) el.textContent = timeUntilMidnight();
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+function calcStreak(scores) {
+  if (!scores.length) return 0;
+  const sorted = scores.sort((a, b) => b.date.localeCompare(a.date));
+  let streak = 0;
+  let date = new Date();
+  date.setHours(12, 0, 0, 0);
+
+  for (const s of sorted) {
+    const d = new Date(s.date + 'T12:00:00');
+    const diff = Math.round((date - d) / 86400000);
+    if (diff > 1) break;
+    if (s.won) streak++;
+    else break;
+    date = d;
+  }
+  return streak;
+}
+
+// ══════════════════════════════════════════════════
+// ALREADY PLAYED SCREEN
+// ══════════════════════════════════════════════════
+async function showAlreadyPlayed(data) {
+  showScreen('already');
+
+  const today = todayStr();
+  let scores = [];
+  try {
+    scores = await sbFetch(`wordle_scores?date=eq.${today}&select=*`);
+  } catch(e) {}
+  PLAYERS.forEach(p => {
+    const lsKey = `t01_wordle_${p.id}_${today}`;
+    const cached = localStorage.getItem(lsKey);
+    if (cached && !scores.find(s => s.player_id === p.id)) {
+      scores.push(JSON.parse(cached));
+    }
+  });
+
+  const lbHtml = await buildLeaderboard(scores);
+
+  const el = document.getElementById('screen-already');
+  el.innerHTML = `
+    <div class="already-banner">
+      <div class="already-icon">${data.won ? '✅' : '💀'}</div>
+      <div class="already-title">${data.won ? '¡Ya ganaste hoy!' : 'Ya jugaste hoy'}</div>
+      <div class="already-sub">
+        La palabra era <strong style="color:var(--pink-light)">${data.word}</strong><br>
+        ${data.won ? `La adivinaste en ${data.attempts} intento${data.attempts !== 1 ? 's' : ''}` : 'No la pillaste — mañana más'}<br>
+        <span style="color:var(--gray);font-size:11px">Solo se puede jugar una vez al día</span>
+      </div>
+    </div>
+    ${lbHtml}
+    ${buildDistribution()}
+    ${buildCountdown()}
+    <button class="change-player-btn" onclick="changePlayer()">↩ Cambiar jugador</button>
+  `;
+
+  startCountdown();
+}
+
+// ══════════════════════════════════════════════════
+// PLAYER PICK SCREEN
+// ══════════════════════════════════════════════════
+function renderPickScreen() {
+  const wrap = document.getElementById('pick-players');
+  wrap.innerHTML = PLAYERS.map(p => `
+    <button class="pick-btn" onclick="selectPlayer('${p.id}')">
+      <div class="pick-btn-num">${p.num}</div>
+      <div class="pick-btn-info">
+        <div class="pick-btn-name">${p.name}</div>
+        <div class="pick-btn-nick">${p.nick}</div>
+      </div>
+      <div class="pick-btn-arrow">→</div>
+    </button>
+  `).join('');
+}
+
+async function selectPlayer(id) {
+  currentPlayer = PLAYERS.find(p => p.id === id);
+  localStorage.setItem('t01_wordle_player', id);
+  await checkAndStart();
+}
+
+function changePlayer() {
+  localStorage.removeItem('t01_wordle_player');
+  currentPlayer = null;
+  document.removeEventListener('keydown', handleKeyDown);
+  showScreen('pick');
+}
+
+// ══════════════════════════════════════════════════
+// SCREEN MANAGER
+// ══════════════════════════════════════════════════
+const screens = ['loading','pick','game','result','already'];
+function showScreen(name) {
+  screens.forEach(s => {
+    const el = document.getElementById('screen-' + s);
+    if (el) el.style.display = s === name ? (s === 'game' ? 'flex' : 'block') : 'none';
+  });
+  if (name === 'pick') renderPickScreen();
+}
+
+// ══════════════════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════════════════
+let toastTimeout;
+function showToast(msg, duration = 1800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function shakeRow(row) {
+  const el = document.getElementById('row-' + row);
+  el.querySelectorAll('.wordle-cell').forEach(c => {
+    c.classList.add('shake');
+    setTimeout(() => c.classList.remove('shake'), 500);
+  });
+}
+
+// ══════════════════════════════════════════════════
+// SQL SETUP HELPER (run once from browser console)
+// ══════════════════════════════════════════════════
+// Paste this in Supabase SQL editor:
+/*
+CREATE TABLE IF NOT EXISTS wordle_scores (
+  id         BIGSERIAL PRIMARY KEY,
+  player_id  TEXT NOT NULL,
+  date       DATE NOT NULL,
+  word       TEXT NOT NULL,
+  won        BOOLEAN NOT NULL DEFAULT false,
+  attempts   INTEGER,
+  guesses    TEXT[] DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(player_id, date)
+);
+ALTER TABLE wordle_scores ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all" ON wordle_scores FOR ALL USING (true) WITH CHECK (true);
+*/
+
+// ══════════════════════════════════════════════════
+// START
+// ══════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
