@@ -415,6 +415,59 @@
   .spinning{display:inline-block;animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
 
+  /* ════════════════════════════
+     PALMARÉS — VITRINA DE TROFEOS
+  ════════════════════════════ */
+  #palmares{background:var(--dark);border-top:1px solid var(--dark4)}
+  .palmares-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
+  .trophy-card{background:var(--dark3);border:1px solid var(--dark4);border-radius:4px;overflow:hidden;cursor:pointer;transition:transform .25s,border-color .25s;position:relative;text-align:center}
+  .trophy-card:hover{transform:translateY(-6px);border-color:rgba(224,64,160,.5)}
+  .trophy-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(224,64,160,0.06),transparent 70%);pointer-events:none;z-index:0}
+  .trophy-img-wrap{padding:28px 20px 12px;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+  .trophy-img-wrap img{width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(224,64,160,.35));transition:filter .3s,transform .3s}
+  .trophy-card:hover .trophy-img-wrap img{filter:drop-shadow(0 0 22px rgba(224,64,160,.65));transform:translateY(-4px) scale(1.06)}
+  .trophy-img-fallback{width:80px;height:80px;display:flex;align-items:center;justify-content:center;font-size:54px;transition:transform .3s}
+  .trophy-card:hover .trophy-img-fallback{transform:translateY(-4px) scale(1.06)}
+  .trophy-stripe{height:2px;background:linear-gradient(90deg,transparent,var(--pink),transparent);opacity:.6;transform:scaleX(0);transform-origin:center;transition:transform .3s}
+  .trophy-card:hover .trophy-stripe{transform:scaleX(1)}
+  .trophy-body{padding:14px 18px 20px;position:relative;z-index:1}
+  .trophy-date{font-family:var(--font-body);font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--pink);margin-bottom:6px}
+  .trophy-name{font-family:var(--font-display);font-size:22px;letter-spacing:1px;color:var(--white);line-height:1.05;margin-bottom:6px}
+  .trophy-sport{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-body);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--pink-light);border:1px solid rgba(224,64,160,.3);background:rgba(224,64,160,.06);padding:3px 10px;border-radius:2px}
+  .trophy-hint{font-family:var(--font-body);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-top:10px;opacity:0;transition:opacity .2s}
+  .trophy-card:hover .trophy-hint{opacity:1}
+  /* TROPHY MODAL */
+  #trophy-modal{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.9);backdrop-filter:blur(14px);overflow-y:auto;padding:40px 20px;align-items:flex-start;justify-content:center}
+  #trophy-modal.open{display:flex;animation:fpIn .3s ease both}
+  .trophy-modal-panel{background:var(--dark2);border:1px solid rgba(224,64,160,.3);border-radius:6px;width:100%;max-width:800px;overflow:hidden;margin:auto;position:relative}
+  .trophy-modal-close{position:absolute;top:16px;right:16px;z-index:10;background:rgba(9,9,9,.8);border:1px solid var(--dark4);border-radius:2px;color:var(--gray-light);font-size:18px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:color .2s,border-color .2s}
+  .trophy-modal-close:hover{color:var(--pink);border-color:var(--pink)}
+  .trophy-modal-hero{position:relative;width:100%;background:linear-gradient(135deg,#10050e,#0a0a14);overflow:hidden}
+  .trophy-modal-hero-photo{width:100%;aspect-ratio:16/7;object-fit:cover;object-position:center top;display:block}
+  .trophy-modal-hero-fallback{width:100%;aspect-ratio:16/7;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#180810 0%,#0c0c1a 50%,#0a0806 100%)}
+  .trophy-modal-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,var(--dark2) 0%,transparent 55%);pointer-events:none}
+  .trophy-modal-cup-badge{position:absolute;bottom:0;left:0;right:0;z-index:2;display:flex;align-items:flex-end;justify-content:center;padding-bottom:20px}
+  .trophy-modal-cup{width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 0 28px rgba(224,64,160,.65)) drop-shadow(0 6px 18px rgba(0,0,0,.9))}
+  .trophy-modal-cup-fallback{font-size:76px;line-height:1;filter:drop-shadow(0 0 18px rgba(224,64,160,.5))}
+  .trophy-modal-body{padding:24px 32px 40px}
+  .trophy-modal-eyebrow{font-family:var(--font-body);font-size:10px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--pink);margin-bottom:8px}
+  .trophy-modal-title{font-family:var(--font-display);font-size:clamp(38px,6vw,64px);letter-spacing:2px;line-height:.9;color:var(--white);margin-bottom:20px}
+  .trophy-modal-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+  .trophy-modal-meta-item{display:flex;align-items:center;gap:7px;font-family:var(--font-body);font-size:12px;color:var(--gray-mid);background:var(--dark3);border:1px solid var(--dark4);padding:7px 14px;border-radius:2px}
+  .trophy-modal-desc{font-family:var(--font-body);font-size:14px;color:var(--gray-mid);line-height:1.85;margin-bottom:28px;border-left:3px solid rgba(224,64,160,.3);padding-left:16px}
+  .trophy-modal-stats-title{font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--gray);margin-bottom:14px}
+  .trophy-modal-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:28px}
+  .trophy-modal-stat{background:var(--dark3);border:1px solid var(--dark4);border-radius:3px;padding:16px;text-align:center}
+  .trophy-modal-stat-val{font-family:var(--font-display);font-size:36px;letter-spacing:2px;color:var(--pink);line-height:1}
+  .trophy-modal-stat-lbl{font-family:var(--font-body);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-top:4px}
+  .trophy-modal-players-title{font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--gray);margin-bottom:12px}
+  .trophy-modal-players{display:flex;gap:8px;flex-wrap:wrap}
+  .trophy-modal-player-tag{font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(224,64,160,.35);color:var(--pink-light);background:rgba(224,64,160,.07);border-radius:2px}
+  @media(max-width:760px){
+    .trophy-modal-body{padding:16px 18px 28px}
+    .trophy-modal-stats{grid-template-columns:repeat(2,1fr)}
+  }
+
   /* MOBILE */
   @media(max-width:760px){
     nav{padding:0 20px}
@@ -658,6 +711,7 @@
   <ul class="nav-links" id="navLinks">
     <li><a href="#inicio">Inicio</a></li>
     <li><a href="#equipo">Equipo</a></li>
+    <li><a href="#palmares">Palmarés</a></li>
     <li><a href="#resultados">Resultados</a></li>
     <li><a href="#noticias">Noticias</a></li>
     <li><a href="#tolerancia" class="nav-cta">Tolerancia</a></li>
@@ -686,7 +740,7 @@
     </div>
     <div class="hero-stats">
       <div class="stat-item"><div class="stat-num">3<em>+</em></div><div class="stat-lbl">Jugadores</div></div>
-      <div class="stat-item"><div class="stat-num" id="stat-torneos">—</div><div class="stat-lbl">Torneos</div></div>
+      <div class="stat-item"><div class="stat-num" id="stat-torneos">—</div><div class="stat-lbl">Victorias</div></div>
       <div class="stat-item"><div class="stat-num">2</div><div class="stat-lbl">Modalidades</div></div>
     </div>
   </div>
@@ -726,6 +780,29 @@
     <div class="team-grid" id="teamGrid"></div>
   </div>
 </section>
+
+<!-- PALMARES -->
+<section id="palmares">
+  <div class="wrap">
+    <div class="divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
+    <span class="s-tag">Títulos conseguidos</span>
+    <h2 class="s-title reveal">PALMARÉS</h2>
+    <div class="palmares-grid" id="palmares-grid">
+      <div class="skeleton" style="height:240px;border-radius:4px"></div>
+      <div class="skeleton" style="height:240px;border-radius:4px"></div>
+      <div class="skeleton" style="height:240px;border-radius:4px"></div>
+    </div>
+    <div id="palmares-more" style="text-align:center;margin-top:20px"></div>
+  </div>
+</section>
+
+<!-- TROPHY MODAL -->
+<div id="trophy-modal">
+  <div class="trophy-modal-panel" id="trophy-modal-panel">
+    <button class="trophy-modal-close" onclick="closeTrophyModal()">✕</button>
+    <div id="trophy-modal-content"></div>
+  </div>
+</div>
 
 <!-- RESULTADOS -->
 <section id="resultados">
@@ -907,6 +984,7 @@
     <div id="adminContent" style="display:none">
       <div class="admin-tabs">
         <button class="admin-tab active" data-atab="resultados">⚽🎮 Resultados</button>
+        <button class="admin-tab" data-atab="palmares">🏆 Palmarés</button>
         <button class="admin-tab" data-atab="noticias">📰 Noticias</button>
         <button class="admin-tab" data-atab="tolerancia">✓✕ Tolerancia</button>
         <button class="admin-tab" data-atab="notifs">🔔 Notificaciones</button>
@@ -965,6 +1043,67 @@
         </div>
 
         <!-- NOTICIAS -->
+        <!-- PALMARES -->
+        <div class="admin-pane" id="apane-palmares">
+          <div class="admin-section-title">Añadir nuevo título</div>
+          <div class="aform">
+            <div class="afg"><label>Nombre del torneo / título</label>
+              <input id="pal-nombre" type="text" placeholder="Ej: Liga de Otoño RL 2025">
+            </div>
+            <div class="aform-row">
+              <div class="afg"><label>Deporte / juego</label>
+                <select id="pal-sport">
+                  <option value="⚽ Fútbol">⚽ Fútbol</option>
+                  <option value="🎾 Pádel">🎾 Pádel</option>
+                  <option value="🚀 Rocket League">🚀 Rocket League</option>
+                  <option value="🔫 CS:GO">🔫 CS:GO</option>
+                  <option value="⚔️ Crimson Desert">⚔️ Crimson Desert</option>
+                  <option value="🎮 Otros Esports">🎮 Otros Esports</option>
+                </select>
+              </div>
+              <div class="afg"><label>Fecha</label>
+                <input id="pal-fecha" type="date">
+              </div>
+            </div>
+            <div class="afg"><label>Descripción (cómo fue el torneo)</label>
+              <textarea id="pal-desc" placeholder="Cuenta cómo fue la competición, qué partidos hubo, el momento clave..."></textarea>
+            </div>
+            <div class="admin-section-title" style="margin-top:8px">Estadísticas del torneo</div>
+            <div class="aform-row">
+              <div class="afg"><label>Partidas jugadas</label><input id="pal-s1" type="text" placeholder="8"></div>
+              <div class="afg"><label>Partidas ganadas</label><input id="pal-s2" type="text" placeholder="7"></div>
+            </div>
+            <div class="aform-row">
+              <div class="afg"><label>Participantes / equipos</label><input id="pal-s3" type="text" placeholder="16"></div>
+              <div class="afg"><label>Stat extra (nombre)</label><input id="pal-s4-lbl" type="text" placeholder="Goles marcados"></div>
+            </div>
+            <div class="afg"><label>Stat extra (valor)</label><input id="pal-s4-val" type="text" placeholder="24"></div>
+            <div class="afg"><label>Jugadores destacados</label>
+              <input id="pal-players" type="text" placeholder="Cousinho, La Oruga, GatoPija (separados por coma)">
+            </div>
+            <div class="admin-section-title" style="margin-top:8px">Imágenes</div>
+            <div class="afg"><label>Foto del equipo levantando el trofeo (opcional)</label>
+              <input type="file" id="pal-foto-file" accept="image/*" onchange="previewPalFoto(this)" style="cursor:pointer">
+              <div id="pal-foto-preview" style="display:none;margin-top:8px">
+                <img id="pal-foto-prev-el" style="width:100%;max-height:160px;object-fit:cover;border-radius:3px;border:1px solid var(--dark4)">
+              </div>
+            </div>
+            <div class="afg"><label>Imagen de la copa / trofeo personalizado (opcional — si no, se usa 🏆)</label>
+              <input type="file" id="pal-copa-file" accept="image/*" onchange="previewPalCopa(this)" style="cursor:pointer">
+              <div id="pal-copa-preview" style="display:none;margin-top:8px">
+                <img id="pal-copa-prev-el" style="width:80px;height:80px;object-fit:contain">
+              </div>
+            </div>
+            <button class="btn-p" id="pal-submit" onclick="addTrophy()">🏆 Añadir al Palmarés</button>
+            <p class="admin-success" id="pal-ok">✓ Título añadido al palmarés</p>
+            <p class="admin-error-msg" id="pal-err">❌ Error al guardar.</p>
+          </div>
+          <div class="admin-list">
+            <div class="admin-list-title">Títulos guardados</div>
+            <div id="admin-pal-list"><div class="skeleton skeleton-match"></div><div class="skeleton skeleton-match"></div></div>
+          </div>
+        </div>
+
         <div class="admin-pane" id="apane-noticias">
           <div class="admin-section-title">Publicar nueva noticia</div>
           <div class="aform">
@@ -1197,6 +1336,29 @@ const players = [
   },
 ];
 
+
+// ══════════════════════════════════════════════════
+// SQL SUPABASE — ejecuta esto en el SQL Editor una vez:
+/*
+CREATE TABLE IF NOT EXISTS palmares (
+  id         BIGSERIAL PRIMARY KEY,
+  nombre     TEXT NOT NULL,
+  sport      TEXT,
+  fecha      DATE NOT NULL,
+  desc       TEXT,
+  s1         TEXT,
+  s2         TEXT,
+  s3         TEXT,
+  s4_lbl     TEXT,
+  s4_val     TEXT,
+  jugadores  TEXT,
+  foto_url   TEXT,
+  copa_url   TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE palmares ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all" ON palmares FOR ALL USING (true) WITH CHECK (true);
+*/
 // ══════════════════════════════════════════════════
 // SUPABASE FETCH HELPER
 // ══════════════════════════════════════════════════
@@ -1255,8 +1417,8 @@ async function loadMatches() {
       wrap.innerHTML = visible.map(r => buildMatchHTML(r, adminMode)).join('') + verMas;
       observeReveals();
     });
-    const comps = new Set(data.map(r => r.comp).filter(Boolean));
-    document.getElementById('stat-torneos').innerHTML = comps.size + '<em>+</em>';
+    const wins = data.filter(r => r.result === 'w').length;
+    document.getElementById('stat-torneos').innerHTML = wins + '<em>+</em>';
   } catch(e) {
     ['ftb','pdl','esp'].forEach(t => {
       document.getElementById('matches-' + t).innerHTML =
@@ -1644,6 +1806,7 @@ function showAdminContent() {
   document.getElementById('adminLogin').style.display = 'none';
   document.getElementById('adminContent').style.display = 'block';
   renderAdminLists();
+  renderAdminPalList();
   loadTolItems();
   loadMatches();
   loadNews();
@@ -1671,6 +1834,7 @@ document.querySelectorAll('.admin-tab').forEach(btn => {
     document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('apane-' + btn.dataset.atab).classList.add('active');
+    if (btn.dataset.atab === 'palmares') renderAdminPalList();
   });
 });
 document.getElementById('admin-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeAdmin(); });
@@ -1867,6 +2031,23 @@ async function openFP(type) {
       grid.innerHTML = data.map(n => buildNewsHTML(n, adminMode, false)).join('');
       observeReveals();
     } catch(e) { inner.innerHTML = '<p class="empty-state">Error cargando noticias.</p>'; }
+  } else if (type === 'palmares') {
+    title.innerHTML = 'PALMARÉS <span>COMPLETO</span>';
+    inner.innerHTML = `
+      <h2 class="fp-section-title">TODOS LOS <span>TÍTULOS</span></h2>
+      <div class="palmares-grid" id="fp-pal-grid" style="margin-top:8px">
+        <div class="skeleton" style="height:240px;border-radius:4px"></div>
+        <div class="skeleton" style="height:240px;border-radius:4px"></div>
+        <div class="skeleton" style="height:240px;border-radius:4px"></div>
+      </div>`;
+    try {
+      const data = await sbFetch('palmares?order=fecha.desc&select=*');
+      _trophyCache = data;
+      const grid = document.getElementById('fp-pal-grid');
+      if (!data.length) { grid.innerHTML = '<p class="empty-state">Sin títulos aún.</p>'; return; }
+      grid.innerHTML = data.map(t => buildTrophyCardHTML(t)).join('');
+      observeReveals();
+    } catch(e) { inner.innerHTML = '<p class="empty-state">Error cargando palmarés.</p>'; }
   }
 }
 
@@ -2001,12 +2182,224 @@ const TRACKS = [
 })();
   
 // ══════════════════════════════════════════════════
+// PALMARÉS
+// ══════════════════════════════════════════════════
+async function uploadPalImg(file, folder) {
+  const ext  = file.name.split('.').pop();
+  const path = `palmares/${folder}/${Date.now()}.${ext}`;
+  const res  = await fetch(`${SUPABASE_URL}/storage/v1/object/noticias-media/${path}`, {
+    method:  'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': file.type },
+    body: file
+  });
+  if (!res.ok) throw new Error('Upload failed');
+  return `${SUPABASE_URL}/storage/v1/object/public/noticias-media/${path}`;
+}
+
+function previewPalFoto(input) {
+  const prev = document.getElementById('pal-foto-preview');
+  const img  = document.getElementById('pal-foto-prev-el');
+  if (input.files && input.files[0]) { img.src = URL.createObjectURL(input.files[0]); prev.style.display='block'; }
+}
+function previewPalCopa(input) {
+  const prev = document.getElementById('pal-copa-preview');
+  const img  = document.getElementById('pal-copa-prev-el');
+  if (input.files && input.files[0]) { img.src = URL.createObjectURL(input.files[0]); prev.style.display='block'; }
+}
+
+async function addTrophy() {
+  const nombre = document.getElementById('pal-nombre').value.trim();
+  const fecha  = document.getElementById('pal-fecha').value;
+  if (!nombre || !fecha) { alert('Rellena al menos el nombre y la fecha.'); return; }
+  const btn = document.getElementById('pal-submit');
+  btn.innerHTML = '<span class="spinning">⏳</span> Guardando...'; btn.disabled = true;
+  try {
+    let foto_url = null, copa_url = null;
+    const fotoFile = document.getElementById('pal-foto-file').files[0];
+    const copaFile = document.getElementById('pal-copa-file').files[0];
+    if (fotoFile) { btn.innerHTML = '<span class="spinning">⏳</span> Subiendo foto...'; foto_url = await uploadPalImg(fotoFile,'fotos'); }
+    if (copaFile) { btn.innerHTML = '<span class="spinning">⏳</span> Subiendo copa...'; copa_url = await uploadPalImg(copaFile,'copas'); }
+
+    const stat4lbl = document.getElementById('pal-s4-lbl').value.trim();
+    const stat4val = document.getElementById('pal-s4-val').value.trim();
+
+    await sbFetch('palmares', {
+      method: 'POST',
+      body: JSON.stringify({
+        nombre,
+        sport:   document.getElementById('pal-sport').value,
+        fecha,
+        descripcion: document.getElementById('pal-desc').value.trim(),
+        s1:      document.getElementById('pal-s1').value.trim(),
+        s2:      document.getElementById('pal-s2').value.trim(),
+        s3:      document.getElementById('pal-s3').value.trim(),
+        s4_lbl:  stat4lbl,
+        s4_val:  stat4val,
+        jugadores: document.getElementById('pal-players').value.trim(),
+        foto_url,
+        copa_url,
+      })
+    });
+    ['pal-nombre','pal-fecha','pal-desc','pal-s1','pal-s2','pal-s3','pal-s4-lbl','pal-s4-val','pal-players'].forEach(id => { document.getElementById(id).value = ''; });
+    document.getElementById('pal-foto-file').value = '';
+    document.getElementById('pal-copa-file').value = '';
+    document.getElementById('pal-foto-preview').style.display = 'none';
+    document.getElementById('pal-copa-preview').style.display = 'none';
+    sendPush('🏆 ¡Nuevo título!', `Tolerancia 0'1 ha ganado: ${nombre}`);
+    showMsg('pal-ok'); loadTrophies(); renderAdminPalList();
+  } catch(e) { console.error(e); showMsg('pal-err'); }
+  btn.innerHTML = '🏆 Añadir al Palmarés'; btn.disabled = false;
+}
+
+async function deleteTrophy(id) {
+  if (!confirm('¿Eliminar este título del palmarés?')) return;
+  try {
+    await sbFetch('palmares?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+    loadTrophies(); renderAdminPalList();
+  } catch(e) { alert('Error al eliminar.'); }
+}
+
+function buildTrophyCardHTML(t) {
+  const dt = fmtDate(t.fecha);
+  const copaImg = t.copa_url
+    ? `<img src="${t.copa_url}" alt="Copa" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+    : '';
+  const copaFallback = `<div class="trophy-img-fallback" ${t.copa_url ? 'style="display:none"' : ''}>🏆</div>`;
+  return `<div class="trophy-card reveal" onclick="openTrophyModal(${t.id})">
+    <div class="trophy-img-wrap">${copaImg}${copaFallback}</div>
+    <div class="trophy-stripe"></div>
+    <div class="trophy-body">
+      <div class="trophy-date">${dt.day} ${dt.mon}</div>
+      <div class="trophy-name">${t.nombre}</div>
+      <span class="trophy-sport">${t.sport || '🏆 Título'}</span>
+      <div class="trophy-hint">Ver detalles →</div>
+    </div>
+  </div>`;
+}
+
+async function loadTrophies() {
+  const grid = document.getElementById('palmares-grid');
+  const more = document.getElementById('palmares-more');
+  grid.innerHTML = '<div class="skeleton" style="height:240px;border-radius:4px"></div>'.repeat(3);
+  more.innerHTML = '';
+  try {
+    const data = await sbFetch('palmares?order=fecha.desc&select=*');
+    if (!data.length) {
+      grid.innerHTML = '<p class="empty-state" style="grid-column:1/-1">Aún no hay títulos en el palmarés. ¡A ganar!</p>';
+      return;
+    }
+    const visible = data.slice(0, 5);
+    grid.innerHTML = visible.map(t => buildTrophyCardHTML(t)).join('');
+    if (data.length > 5) {
+      more.innerHTML = `<button class="ver-mas-btn" onclick="openFP('palmares')">Ver todos los títulos (${data.length}) <span>→</span></button>`;
+    }
+    observeReveals();
+  } catch(e) {
+    grid.innerHTML = '<p class="empty-state" style="grid-column:1/-1">Error cargando el palmarés.</p>';
+  }
+}
+
+let _trophyCache = [];
+async function openTrophyModal(id) {
+  // Load if cache empty
+  if (!_trophyCache.length) {
+    try { _trophyCache = await sbFetch('palmares?select=*'); } catch(e) {}
+  }
+  const t = _trophyCache.find(x => x.id === id);
+  if (!t) return;
+
+  const dt = fmtDate(t.fecha);
+
+  // Hero: foto del equipo levantando la copa
+  const heroHTML = t.foto_url
+    ? `<img class="trophy-modal-hero-photo" src="${t.foto_url}" alt="${t.nombre}" onerror="this.parentElement.innerHTML='<div class=\\'trophy-modal-hero-fallback\\'>🏆</div>'">`
+    : `<div class="trophy-modal-hero-fallback"><div style="font-size:90px;opacity:.15">🏆</div></div>`;
+
+  // Copa badge en el hero
+  const cupaHTML = t.copa_url
+    ? `<img class="trophy-modal-cup" src="${t.copa_url}" alt="Copa">`
+    : `<div class="trophy-modal-cup-fallback">🏆</div>`;
+
+  // Stats
+  const statsArr = [
+    t.s1 ? { val: t.s1, lbl: 'Partidas jugadas' } : null,
+    t.s2 ? { val: t.s2, lbl: 'Partidas ganadas' } : null,
+    t.s3 ? { val: t.s3, lbl: 'Participantes' }    : null,
+    (t.s4_lbl && t.s4_val) ? { val: t.s4_val, lbl: t.s4_lbl } : null,
+  ].filter(Boolean);
+
+  const statsHTML = statsArr.length
+    ? `<div class="trophy-modal-stats-title">— Estadísticas —</div>
+       <div class="trophy-modal-stats">
+         ${statsArr.map(s => `<div class="trophy-modal-stat">
+           <div class="trophy-modal-stat-val">${s.val}</div>
+           <div class="trophy-modal-stat-lbl">${s.lbl}</div>
+         </div>`).join('')}
+       </div>`
+    : '';
+
+  // Players
+  const playersHTML = t.jugadores
+    ? `<div class="trophy-modal-players-title">— Jugadores —</div>
+       <div class="trophy-modal-players">
+         ${t.jugadores.split(',').map(p => `<span class="trophy-modal-player-tag">${p.trim()}</span>`).join('')}
+       </div>`
+    : '';
+
+  // Meta tags
+  const metaHTML = `
+    <div class="trophy-modal-meta">
+      <div class="trophy-modal-meta-item"><span class="trophy-modal-meta-icon">📅</span>${dt.day} ${dt.mon}</div>
+      ${t.sport ? `<div class="trophy-modal-meta-item"><span class="trophy-modal-meta-icon">🏅</span>${t.sport}</div>` : ''}
+    </div>`;
+
+  document.getElementById('trophy-modal-content').innerHTML = `
+    <div class="trophy-modal-hero">
+      ${heroHTML}
+      <div class="trophy-modal-cup-badge">${cupaHTML}</div>
+    </div>
+    <div class="trophy-modal-body">
+      <div class="trophy-modal-eyebrow">Tolerancia 0'1 · Palmarés</div>
+      <div class="trophy-modal-title">${t.nombre}</div>
+      ${metaHTML}
+      ${t.descripcion ? `<div class="trophy-modal-desc">${t.descripcion}</div>` : ''}
+      ${statsHTML}
+      ${playersHTML}
+    </div>`;
+
+  document.getElementById('trophy-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTrophyModal() {
+  document.getElementById('trophy-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('trophy-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeTrophyModal();
+});
+
+async function renderAdminPalList() {
+  try {
+    const data = await sbFetch('palmares?order=fecha.desc&select=*');
+    _trophyCache = data; // update cache too
+    document.getElementById('admin-pal-list').innerHTML =
+      data.map(t => `<div class="admin-item">
+        <span class="admin-item-text">🏆 ${t.fecha} · ${t.nombre} (${t.sport||''})</span>
+        <button class="admin-item-del" onclick="deleteTrophy(${t.id})">✕</button>
+      </div>`).join('') || '<p class="empty-state" style="padding:12px 0">Sin títulos aún.</p>';
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════
 renderTeam();
 loadMatches();
 loadNews();
 loadTolItems();
+loadTrophies();
 observeReveals();
   // ── NOTIF FOOTER BUTTON ──
 (function() {
