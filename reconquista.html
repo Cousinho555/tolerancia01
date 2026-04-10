@@ -2377,7 +2377,7 @@ const WORD_LIST = [
   "unir","dividir","aislar","desterrar","perdonar","castigar","juzgar","condenar","absolver","salvar",
   "reparar","honrar","dignidad","derechos","deberes","igualdad","justicia","equidad","diversidad","inclusion",
   "racismo","fascismo","nazismo","extremismo","sectarismo","prejuicio","estigma","discriminar","segregar","homofobia",
-  "transfobia","xenofobia","islamofobia","antisemitismo","tolerancia","maricon","moro","gallu",
+  "transfobia","xenofobia","islamofobia","antisemitismo","tolerancia","maricon","moro","gallu", "mbappe", "mono", "asturias",
 ].map(w => w.toUpperCase().replace(/Á/g,'A').replace(/É/g,'E').replace(/Í/g,'I').replace(/Ó/g,'O').replace(/Ú/g,'U').replace(/Ñ/g,'N'));
 const WORDS = [...new Set(WORD_LIST.filter(w => w.length >= 3 && w.length <= 8))];
 
@@ -2388,9 +2388,9 @@ const ADJACENCY = {
   'prov-huelva':       ['prov-cadiz','prov-sevilla','prov-badajoz'],
   'prov-sevilla':      ['prov-cadiz','prov-huelva','prov-badajoz','prov-cordoba','prov-malaga'],
   'prov-malaga':       ['prov-cadiz','prov-sevilla','prov-cordoba','prov-granada'],           // fix1: removed jaen
-  'prov-cordoba':      ['prov-sevilla','prov-malaga','prov-jaen','prov-ciudadreal','prov-badajoz'],
+  'prov-cordoba':      ['prov-sevilla','prov-malaga','prov-jaen','prov-ciudadreal','prov-badajoz','prov-granada'],
   'prov-jaen':         ['prov-cordoba','prov-granada','prov-albacete','prov-ciudadreal'],     // fix1: removed malaga
-  'prov-granada':      ['prov-malaga','prov-jaen','prov-almeria','prov-murcia'],
+  'prov-granada':      ['prov-malaga','prov-jaen','prov-almeria','prov-murcia','prov-cordoba'],
   'prov-almeria':      ['prov-granada','prov-murcia'],
   'prov-murcia':       ['prov-almeria','prov-granada','prov-albacete','prov-alicante'],
   // ── EXTREMADURA ──
