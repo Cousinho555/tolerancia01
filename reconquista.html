@@ -1987,6 +1987,33 @@ body::before {
 </head>
 <body>
 
+<!-- BACK BUTTON -->
+<a href="index.html" style="
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  background: rgba(7,4,10,0.82);
+  border: 1px solid var(--border-bright);
+  backdrop-filter: blur(10px);
+  padding: 9px 18px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: color .2s, border-color .2s, background .2s;
+" onmouseover="this.style.color='#fff';this.style.borderColor='var(--gold)';this.style.background='rgba(201,168,76,0.12)'"
+   onmouseout="this.style.color='var(--gold-light)';this.style.borderColor='var(--border-bright)';this.style.background='rgba(7,4,10,0.82)'">
+  ← Volver
+</a>
+
 <!-- TOAST -->
 <div id="toast"></div>
 
