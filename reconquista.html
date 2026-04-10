@@ -2069,8 +2069,8 @@ body::before {
       <span class="map-nav-name" id="map-nav-name">Jugador</span>
     </div>
     <button class="map-nav-change" onclick="goToPick()">Cambiar jugador</button>
-    <button class="map-nav-dev" onclick="devNextDay()" title="Simular siguiente día" style="color:#4fc3f7;border-color:rgba(79,195,247,0.35);background:rgba(79,195,247,0.08)">⏭ NEXT DAY</button>
-    <button class="map-nav-dev" onclick="devReset()" title="Reset completo — solo para desarrollo">🔄 DEV RESET</button>
+    <button id="btn-next-day" class="map-nav-dev" onclick="devNextDay()" title="Simular siguiente día" style="color:#4fc3f7;border-color:rgba(79,195,247,0.35);background:rgba(79,195,247,0.08)">⏭ NEXT DAY</button>
+    <button id="btn-dev-reset" class="map-nav-dev" onclick="devReset()" title="Reset completo — solo para desarrollo">🔄 DEV RESET</button>
   </div>
 
   <div class="map-layout">
@@ -2271,6 +2271,13 @@ body::before {
 /* ═══════════════════════════════════════════════════
    CONFIG
 ═══════════════════════════════════════════════════ */
+// ══════════════════════════════════════════════
+// 🛠️ MODO DESARROLLO
+// Cambia a `false` para ocultar los botones
+// DEV RESET y NEXT DAY antes del juego oficial
+// ══════════════════════════════════════════════
+const DEV_MODE = true;
+
 const SUPABASE_URL = 'https://nrgsgdhuabsgyqqrjzfp.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_BeGHC7EEH1TwYLxIgkJzdA_2i61LJ1w';
 
@@ -2609,6 +2616,13 @@ async function init() {
   showScreen('screen-loading');
   spawnEmbers();
   targetWord = getTodayWord();
+
+  // Apply DEV_MODE: show or hide dev buttons
+  const devBtns = ['btn-next-day', 'btn-dev-reset'];
+  devBtns.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = DEV_MODE ? '' : 'none';
+  });
 
   // Load or create map state
   let saved = await getMapState();
