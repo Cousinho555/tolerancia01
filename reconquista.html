@@ -1967,13 +1967,14 @@ body::before {
    MOBILE
 ══════════════════════════════════════════════ */
 /* ══════════════════════════════════════════════
-   BACK BUTTON
+   BACK TO INDEX BUTTON (intro + map nav)
 ══════════════════════════════════════════════ */
-.back-btn {
-  position: fixed;
+/* Versión para la intro: esquina absoluta dentro de screen-intro */
+.intro-back {
+  position: absolute;
   top: 16px;
   left: 16px;
-  z-index: 999;
+  z-index: 20;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -1983,8 +1984,8 @@ body::before {
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--gold-light);
-  background: rgba(7,4,10,0.80);
-  border: 1px solid rgba(201,168,76,0.45);
+  background: rgba(7,4,10,0.75);
+  border: 1px solid rgba(201,168,76,0.40);
   backdrop-filter: blur(10px);
   padding: 8px 14px;
   border-radius: 2px;
@@ -1992,22 +1993,36 @@ body::before {
   transition: color .2s, border-color .2s, background .2s;
   white-space: nowrap;
 }
-.back-btn:hover {
+.intro-back:hover {
   color: #fff;
   border-color: var(--gold);
   background: rgba(201,168,76,0.10);
 }
-.back-btn svg {
-  width: 12px; height: 12px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+/* Versión para navbars (mapa, etc.): botón inline sin position */
+.nav-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  background: none;
+  border: 1px solid rgba(201,168,76,0.30);
+  padding: 5px 12px;
+  border-radius: 2px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+  white-space: nowrap;
   flex-shrink: 0;
-  transition: transform .2s;
 }
-.back-btn:hover svg { transform: translateX(-3px); }
+.nav-back-link:hover {
+  color: #fff;
+  border-color: var(--gold);
+}
 
 @media (max-width: 900px) {
   .map-layout { grid-template-columns: 1fr; }
@@ -2028,58 +2043,53 @@ body::before {
 
   /* ── INTRO MOBILE ── */
   #screen-intro {
-    justify-content: flex-start;
+    justify-content: center;
     overflow-y: auto;
+    overflow-x: hidden;
   }
   .intro-content {
-    padding: 80px 20px 48px;
+    padding: 70px 20px 48px; /* espacio para el botón intro-back arriba */
     width: 100%;
   }
   .intro-title {
-    font-size: clamp(42px, 18vw, 80px);
-    letter-spacing: 2px;
-    word-break: break-word;
+    font-size: clamp(38px, 15vw, 72px);
+    letter-spacing: 1px;
   }
   .intro-eyebrow {
     font-size: 9px;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
   }
   .intro-subtitle {
-    font-size: clamp(11px, 3.5vw, 14px);
+    font-size: clamp(10px, 3vw, 13px);
     letter-spacing: 2px;
   }
   .intro-divider {
     width: 100%;
-    max-width: 260px;
+    max-width: 240px;
+    margin: 20px 0;
   }
   .intro-tagline {
-    font-size: 14px;
-    margin-bottom: 36px;
-    padding: 0 8px;
+    font-size: 13px;
+    margin-bottom: 32px;
   }
   .btn-main {
     width: 100%;
-    max-width: 320px;
-    padding: 15px 24px;
+    max-width: 300px;
+    padding: 15px 20px;
     font-size: 13px;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
   }
   .btn-lore {
     font-size: 11px;
     letter-spacing: 2px;
-    padding: 10px 20px;
   }
   .intro-scroll { display: none; }
+  /* map nav en móvil: ocultar logo para ganar espacio */
+  .map-nav-logo { display: none; }
 }
 </style>
 </head>
 <body>
-
-<!-- BACK BUTTON -->
-<a href="index.html" class="back-btn" aria-label="Volver al inicio">
-  <svg viewBox="0 0 16 16"><polyline points="10,3 5,8 10,13"/></svg>
-  Volver
-</a>
 
 <!-- TOAST -->
 <div id="toast"></div>
@@ -2109,6 +2119,7 @@ body::before {
 
 <!-- SCREEN: INTRO -->
 <div class="screen" id="screen-intro">
+  <a href="index.html" class="intro-back">← Volver</a>
   <div class="intro-bg"></div>
   <div class="intro-army">
     <img src="asturius/gallu-army.png" alt="El Ejército de Gallu" onerror="this.style.display='none'">
@@ -2157,6 +2168,7 @@ body::before {
 <!-- SCREEN: MAP -->
 <div class="screen" id="screen-map">
   <div class="map-nav">
+    <a href="index.html" class="nav-back-link">← Volver</a>
     <div class="map-nav-logo">ASTURIUS <span>· Mapa</span></div>
     <div class="map-nav-player">
       <div class="map-nav-dot"></div>
