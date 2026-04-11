@@ -2382,7 +2382,7 @@ body::before {
 // Cambia a `false` para ocultar los botones
 // DEV RESET y NEXT DAY antes del juego oficial
 // ══════════════════════════════════════════════
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const SUPABASE_URL = 'https://nrgsgdhuabsgyqqrjzfp.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_BeGHC7EEH1TwYLxIgkJzdA_2i61LJ1w';
@@ -2607,6 +2607,7 @@ async function getTodayScores() {
 async function saveScore(data) {
   try {
     await sbFetch('reconquista_scores', { method: 'POST', body: JSON.stringify(data), prefer: 'return=minimal' });
+    _todayScoresCache = null; // invalidar caché para forzar recarga
   } catch(e) {}
 }
 
@@ -2749,6 +2750,10 @@ async function init() {
     currentPlayer = PLAYERS.find(p => p.id === savedPlayer);
     showScreen('screen-map');
     renderMap();
+    refreshTodayScores().then(() => {
+      renderMap();
+      requestAnimationFrame(() => requestAnimationFrame(() => renderPlayerPins()));
+    });
   } else {
     showScreen('screen-intro');
   }
@@ -2779,7 +2784,15 @@ function goToMapFromGame() {
   goToMap();
 }
 
-function goToMap()   { showScreen('screen-map'); renderMap(); requestAnimationFrame(() => requestAnimationFrame(() => renderPlayerPins())); }
+function goToMap() {
+  showScreen('screen-map');
+  renderMap();
+  // Refrescar scores de todos los jugadores desde Supabase, luego re-renderizar
+  refreshTodayScores().then(() => {
+    renderMap();
+    requestAnimationFrame(() => requestAnimationFrame(() => renderPlayerPins()));
+  });
+}
 
 async function selectPlayer(id) {
   currentPlayer = PLAYERS.find(p => p.id === id);
@@ -2851,6 +2864,31 @@ function renderPickCards() {
 /* ═══════════════════════════════════════════════════
    MAP RENDER
 ═══════════════════════════════════════════════════ */
+
+// Cache de scores del día actual, para no depender solo del localStorage propio
+let _todayScoresCache = null;
+let _todayScoresCacheDay = null;
+
+async function refreshTodayScores() {
+  const gameDay = gameDayStr();
+  if (_todayScoresCacheDay === gameDay && _todayScoresCache) return _todayScoresCache;
+  try {
+    const rows = await getTodayScores();
+    _todayScoresCache = rows || [];
+    _todayScoresCacheDay = gameDay;
+    // Poblar también el localStorage con los datos de los otros jugadores
+    _todayScoresCache.forEach(row => {
+      const key = `reconquista_${row.player_id}_${gameDay}`;
+      if (!localStorage.getItem(key)) {
+        localStorage.setItem(key, JSON.stringify(row));
+      }
+    });
+  } catch(e) {
+    _todayScoresCache = _todayScoresCache || [];
+  }
+  return _todayScoresCache;
+}
+
 function renderMap() {
   if (!mapState) return;
   const today   = todayStr();
@@ -3405,29 +3443,43 @@ function buildLeaderboardHTML(todayScores, allScores) {
 function renderPlayerPins() {
   const wrap = document.getElementById('player-pins');
   if (!wrap || !mapState) return;
-  wrap.innerHTML = '';
   const svg = document.getElementById('spain-map');
   if (!svg) return;
   const vb = svg.viewBox.baseVal;
-  // Use offsetWidth/offsetHeight — works even when getBoundingClientRect returns 0
-  const svgW = svg.offsetWidth  || svg.clientWidth  || svg.parentElement?.offsetWidth  || 700;
-  const svgH = svg.offsetHeight || svg.clientHeight || svg.parentElement?.offsetHeight || 530;
-  const scaleX = svgW / vb.width;
-  const scaleY = svgH / vb.height;
-  // Safety: if scales are 0 or NaN, retry after paint
-  if (!scaleX || !scaleY || isNaN(scaleX) || isNaN(scaleY)) {
-    requestAnimationFrame(() => renderPlayerPins());
+
+  // Obtener dimensiones del SVG con múltiples métodos
+  const svgRect = svg.getBoundingClientRect();
+  const svgW = svgRect.width  || svg.offsetWidth  || svg.clientWidth  || svg.parentElement?.offsetWidth  || 0;
+  const svgH = svgRect.height || svg.offsetHeight || svg.clientHeight || svg.parentElement?.offsetHeight || 0;
+
+  // Si el SVG aún no tiene dimensiones, reintentar hasta 20 veces con delay creciente
+  if (!svgW || !svgH || svgW < 10 || svgH < 10) {
+    if ((renderPlayerPins._retries || 0) < 20) {
+      renderPlayerPins._retries = (renderPlayerPins._retries || 0) + 1;
+      setTimeout(() => renderPlayerPins(), 100 * renderPlayerPins._retries);
+    }
     return;
   }
+  renderPlayerPins._retries = 0;
+
+  const scaleX = svgW / vb.width;
+  const scaleY = svgH / vb.height;
+  if (!scaleX || !scaleY || isNaN(scaleX) || isNaN(scaleY)) return;
+
+  // Calcular offset del SVG relativo al wrap (overlay)
+  const wrapRect = wrap.getBoundingClientRect();
+  const offsetX  = svgRect.left - wrapRect.left;
+  const offsetY  = svgRect.top  - wrapRect.top;
+
+  wrap.innerHTML = '';
 
   PLAYERS.forEach(p => {
     const provId = mapState.playerPositions?.[p.id] || 'prov-cadiz';
     const c = PROVINCE_CENTROIDS[provId];
     if (!c) return;
 
-    // SVG coords → px relative to wrap
-    const px = c[0] * scaleX;
-    const py = c[1] * scaleY;
+    const px = offsetX + c[0] * scaleX;
+    const py = offsetY + c[1] * scaleY;
 
     const pin = document.createElement('div');
     pin.className = 'player-pin';
@@ -3457,6 +3509,14 @@ function renderPlayerPins() {
     wrap.appendChild(pin);
   });
 }
+
+// Re-renderizar pins cuando cambia el tamaño de la ventana (orientación móvil, etc.)
+window.addEventListener('resize', () => {
+  if (document.getElementById('screen-map')?.classList.contains('active')) {
+    renderPlayerPins._retries = 0;
+    renderPlayerPins();
+  }
+});
 
 function setupMapTooltips() {
   const tooltip = document.getElementById('map-tooltip');
